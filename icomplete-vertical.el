@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020  Omar Antolín Camarena
 
-;; Author: Omar Antolín Camarena;;; -*- lexical-binding: t; -*- <omar@matem.unam.mx>
+;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,12 @@
 ;;; Commentary:
 
 ;; This is a simple-minded global minor mode to comfortably use
-;; icomplete to display completion candidates vertically. A simple
+;; icomplete to display completion candidates vertically.  A simple
 ;; (setq icomplete-separator "\n") gets you 95% of the way there, this
 ;; small package just adds a few visual tweaks on top of that.
 
 ;;; Code:
+(require 'icomplete)
 
 (defcustom icomplete-vertical-prospects-height 10
   "Minibuffer height when using icomplete vertically."
@@ -33,18 +34,18 @@
   :group 'icomplete)
 
 (defvar icomplete-vertical-old-separator nil
-  "A place to store the value of `icomplete-separator' when
-icomplete-vertical-mode was turned off. This value is restored
-when icomplete-vertical-mode is turned off.")
+  "Store last known value of `icomplete-separator'.
+Records the value when `icomplete-vertical-mode' is turned on.
+It is then restored when icomplete-vertical-mode is turned off.")
 
 (defvar icomplete-vertical-old-hide-common nil
-  "A place to store the value of `icomplete-hide-common-prefix'
-when icomplete-vertical-mode was turned off. This value is
-restored when icomplete-vertical-mode is turned off.")
+  "Store last known value of `icomplete-hide-common-prefix'.
+Records the value when `icomplete-vertical-mode' is turned on.
+It is then restored when icomplete-vertical-mode is turned off.")
 
 (defun icomplete-vertical-format-completions (completions)
-  "Reformat completions for better aesthetics. Meant to be used
-as filter return advice for `icomplete-completions'."
+  "Reformat COMPLETIONS for better aesthetics.
+To be used as filter return advice for `icomplete-completions'."
   (save-match-data
     (if (string-match "^\\((.*)\\|\\[.+\\]\\)?{\\(\\(?:.\\|\n\\)+\\)}"
                       completions)
@@ -54,8 +55,8 @@ as filter return advice for `icomplete-completions'."
       completions)))
 
 (defun icomplete-vertical-minibuffer-setup ()
-  "Setup minibuffer for a vertical icomplete session. Meant to be
-added to `icomplete-minibuffer-setup-hook'."
+  "Setup minibuffer for a vertical icomplete session.
+Meant to be added to `icomplete-minibuffer-setup-hook'."
   (visual-line-mode -1) ;just in case
   (setq truncate-lines t)
   (enlarge-window (1- icomplete-vertical-prospects-height)))
