@@ -1,9 +1,36 @@
-;;; -*- lexical-binding: t; -*-
+;;; icomplete-vertical.el --- Global minor mode to display icomplete candidates vertically  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2020  Omar Antolín Camarena
+
+;; Author: Omar Antolín Camarena;;; -*- lexical-binding: t; -*- <omar@matem.unam.mx>
+;; Keywords: convenience
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This is a simple-minded global minor mode to comfortably use
+;; icomplete to display completion candidates vertically. A simple
+;; (setq icomplete-separator "\n") gets you 95% of the way there, this
+;; small package just adds a few visual tweaks on top of that.
+
+;;; Code:
 
 (defcustom icomplete-vertical-prospects-height 10
   "Minibuffer height when using icomplete vertically."
   :type 'integer
-  :group 'icomplete-vertical)
+  :group 'icomplete)
 
 (defvar icomplete-vertical-old-separator nil
   "A place to store the value of `icomplete-separator' when
@@ -33,6 +60,7 @@ added to `icomplete-minibuffer-setup-hook'."
   (setq truncate-lines t)
   (enlarge-window (1- icomplete-vertical-prospects-height)))
 
+;;;###autoload
 (define-minor-mode icomplete-vertical-mode
   "Display icomplete candidates vertically."
   :global t
@@ -55,3 +83,5 @@ added to `icomplete-minibuffer-setup-hook'."
                  #'icomplete-vertical-minibuffer-setup)))
 
 (provide 'icomplete-vertical)
+;;; icomplete-vertical.el ends here
+
