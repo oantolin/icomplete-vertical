@@ -17,7 +17,8 @@ which this package addresses:
 
 For now, put =icomplete-vertical.el= somewhere in your =load-path=, and
 =require= it. Turn the minor mode on or off with =M-x
-icomplete-vertical-mode=.
+icomplete-vertical-mode=. It only does something when =icomplete-mode= is
+also active.
 
 (Personally, I can't decide whether I prefer icomplete horizontally or
 vertically, so I bound =icomplete-vertical-mode= to a key and go back
