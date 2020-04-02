@@ -25,7 +25,7 @@ and forth indecisively.)
 
 You can configure how tall you want the minibuffer during completion
 by customizing the variable =icomplete-vertical-prospects-height=. This
-is a separate variable from =icomplete--prospects-height= because if you
+is a separate variable from =icomplete-prospects-height= because if you
 use icomplete both horizontally and vertically you are likely to want
 different values for the two settings.
 
