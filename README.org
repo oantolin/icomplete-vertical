@@ -1,0 +1,37 @@
+* icomplete-vertical
+
+This is a simple-minded global minor mode to comfortably use
+icomplete to display completion candidates vertically. A simple
+=(setq icomplete-separator "\n")= gets you 95% of the way there, this
+small package just adds a few visual tweaks on top of that.
+
+Specifically, simply setting the separator to a newline has two issues
+which this package addresses:
+
+1. Usually the minibuffer prompt and the text you type scroll off to
+   the left!
+2. The first candidate appears in the same line as you are typing, not
+   below it lined up with the other candidates.
+
+* Installation and usage
+
+For now, put =icomplete-vertical.el= somewhere in your =load-path=, and
+=require= it. Turn the minor mode on or off with =M-x
+icomplete-vertical-mode=.
+
+(Personally, I can't decide whether I prefer icomplete horizontally or
+vertically, so I bound =icomplete-vertical-mode= to a key and go back
+and forth indecisively.)
+
+You can configure how tall you want the minibuffer during completion
+by customizing the variable =icomplete-vertical-prospects-height=. This
+is a separate variable from =icomplete--prospects-height= because if you
+use icomplete both horizontally and vertically you are likely to want
+different values for the two settings.
+
+* Screenshot
+
+This is what =describe-function= looks like in =icomplete-vertical-mode=
+(with Protesilaos Stavrou's [[https://gitlab.com/protesilaos/modus-themes][lovely modus-operandi theme]]):
+
+[[./describe-function.png]]
