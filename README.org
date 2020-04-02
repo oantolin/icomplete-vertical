@@ -34,12 +34,12 @@ different values for the two settings.
 This is what =describe-function= looks like in =icomplete-vertical-mode=
 (with Protesilaos Stavrou's [[https://gitlab.com/protesilaos/modus-themes][lovely modus-operandi theme]]):
 
-[[./describe-function-vertical.png]]
+[[images/describe-function-vertical.png]]
 
 For comparison this is what simply setting =icomplete-separator= to a newline
 looks like:
 
-[[./describe-function-just-sep.png]]
+[[images/describe-function-just-sep.png]]
 
 Notice the missing prompt and text typed so far (=icom=), and how the
 first candidate (=icomplete-tidy=) is on the line where you type.
