@@ -49,7 +49,7 @@ To be used as filter return advice for `icomplete-completions'."
   (save-match-data
     (if (string-match "^\\((.*)\\|\\[.+\\]\\)?{\\(\\(?:.\\|\n\\)+\\)}"
                       completions)
-        (format "%s {\n%s}"
+        (format "%s \n%s"
                 (or (match-string 1 completions) "")
                 (match-string 2 completions))
       completions)))
@@ -85,4 +85,3 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
 
 (provide 'icomplete-vertical)
 ;;; icomplete-vertical.el ends here
-
