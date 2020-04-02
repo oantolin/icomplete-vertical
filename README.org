@@ -36,7 +36,8 @@ This is what =describe-function= looks like in =icomplete-vertical-mode=
 
 [[./describe-function-vertical.png]]
 
-For comparison this is what simply setting =icomplete-separator= to ="\n"= looks like:
+For comparison this is what simply setting =icomplete-separator= to a newline
+looks like:
 
 [[./describe-function-just-sep.png]]
 
