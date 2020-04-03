@@ -43,6 +43,11 @@ It is then restored when icomplete-vertical-mode is turned off.")
 Records the value when `icomplete-vertical-mode' is turned on.
 It is then restored when icomplete-vertical-mode is turned off.")
 
+(defvar icomplete-vertical-old-resize-mini-windows nil
+  "Store last known value of `resize-mini-windows'.
+Records the value when `icomplete-vertical-mode' is turned on.
+It is then restored when icomplete-vertical-mode is turned off.")
+
 (defun icomplete-vertical-format-completions (completions)
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
@@ -70,7 +75,9 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
         (setq icomplete-vertical-old-separator icomplete-separator
               icomplete-separator "\n"
               icomplete-vertical-old-hide-common icomplete-hide-common-prefix
-              icomplete-hide-common-prefix nil)
+              icomplete-hide-common-prefix nil
+              icomplete-vertical-old-resize-mini-windows resize-mini-windows
+              resize-mini-windows 'grow-only)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
