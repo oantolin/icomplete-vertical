@@ -21,22 +21,17 @@
 ;;; Commentary:
 
 ;; This package defines a global minor mode to display Icomplete
-;; completion candidates vertically.  It solves certain problems that a
-;; mere (setq icomplete-separator "\n") could never overcome.
+;; completion candidates vertically.  You could get a vertical display
+;; without this package, by using (setq icomplete-separator "\n"), but
+;; that has two problems which `icomplete-vertical-mode' solves:
 ;;
-;; Specifically, simply setting the separator to a newline presents two
-;; issues:
+;; 1. Usually the minibuffer prompt and the text you type scroll off
+;;    to the left!  This conceals the minibuffer prompt, and worse,
+;;    the text you enter.
 ;;
-;; 1 Usually the minibuffer prompt and the text you type scroll off to
-;;   the left!  This conceals the minibuffer prompt.
-;; 2 The first candidate appears on the same line as the one you are
-;;   typing in.  This clutters the view and can cause confusion.
-;;
-;; Both of these are addressed by enabling `icomplete-vertical-mode':
-;;
-;; + The minibuffer prompt remains visible.
-;; + The matching item appears on a line below the minibuffer input,
-;;   while being vertically aligned to the list of candidates.
+;; 2. The first candidate appears on the same line as the one you are
+;;    typing in. This makes it harder to visually scan the candidates
+;;    as the first one starts in a different column from the others.
 
 ;;; Code:
 (require 'icomplete)

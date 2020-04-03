@@ -1,17 +1,19 @@
 * icomplete-vertical
 
-This is a simple-minded global minor mode to comfortably use
-icomplete to display completion candidates vertically. A simple
-=(setq icomplete-separator "\n")= gets you 95% of the way there, this
-small package just adds a few visual tweaks on top of that.
+This package defines a global minor mode to display Icomplete
+completion candidates vertically.  You could get a vertical display
+without this package, by using =(setq icomplete-separator "\n")=, but
+that has two problems which `icomplete-vertical-mode' solves:
 
-Specifically, simply setting the separator to a newline has two issues
-which this package addresses:
+1. Usually the minibuffer prompt and the text you type scroll off
+   to the left!  This conceals the minibuffer prompt, and worse,
+   the text you enter.
 
-1. Usually the minibuffer prompt and the text you type scroll off to
-   the left!
-2. The first candidate appears in the same line as you are typing, not
-   below it lined up with the other candidates.
+2. The first candidate appears on the same line as the one you are
+   typing in. This makes it harder to visually scan the candidates
+   as the first one starts in a different column from the others.
+
+The screenshots below explain this better than words can.
 
 * Installation and usage
 
@@ -37,8 +39,8 @@ This is what =describe-function= looks like in =icomplete-vertical-mode=
 
 [[images/describe-function-vertical.png]]
 
-For comparison this is what simply setting =icomplete-separator= to a newline
-looks like:
+For comparison this is what you get without this package, simply
+setting =icomplete-separator= to a newline:
 
 [[images/describe-function-just-sep.png]]
 
