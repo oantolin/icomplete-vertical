@@ -40,8 +40,9 @@ Records the values when `icomplete-vertical-mode' is turned on.
 The values are restored when icomplete-vertical-mode is turned off.")
 
 (defmacro icomplete-vertical-save-values (saved &rest bindings)
-  "Bind variables according to BINDINGS and set SAVED to an alist
-of their previous values. Each element of BINDINGS is a
+  "Save state of variables prior to `icomplete-vertical-mode' activation.
+Bind variables according to BINDINGS and set SAVED to an alist of
+their previous values.  Each element of BINDINGS is a
 list (SYMBOL VALUEFORM) which binds SYMBOL to the value of
 VALUEFORM."
   `(setq
