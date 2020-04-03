@@ -3,7 +3,7 @@
 This package defines a global minor mode to display Icomplete
 completion candidates vertically.  You could get a vertical display
 without this package, by using =(setq icomplete-separator "\n")=, but
-that has two problems which `icomplete-vertical-mode' solves:
+that has two problems which =icomplete-vertical-mode= solves:
 
 1. Usually the minibuffer prompt and the text you type scroll off
    to the left!  This conceals the minibuffer prompt, and worse,
