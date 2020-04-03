@@ -27,31 +27,27 @@
 
 ;;; Code:
 (require 'icomplete)
+(require 'cl-lib)
 
 (defcustom icomplete-vertical-prospects-height 10
   "Minibuffer height when using icomplete vertically."
   :type 'integer
   :group 'icomplete)
 
-(defvar icomplete-vertical-old-separator nil
-  "Store last known value of `icomplete-separator'.
-Records the value when `icomplete-vertical-mode' is turned on.
-It is then restored when icomplete-vertical-mode is turned off.")
+(defvar icomplete-vertical-saved-state nil
+  "Alist of certain variables and their last know value.
+Records the values when `icomplete-vertical-mode' is turned on.
+The values are restored when icomplete-vertical-mode is turned off.")
 
-(defvar icomplete-vertical-old-hide-common nil
-  "Store last known value of `icomplete-hide-common-prefix'.
-Records the value when `icomplete-vertical-mode' is turned on.
-It is then restored when icomplete-vertical-mode is turned off.")
-
-(defvar icomplete-vertical-old-resize-mini-windows nil
-  "Store last known value of `resize-mini-windows'.
-Records the value when `icomplete-vertical-mode' is turned on.
-It is then restored when icomplete-vertical-mode is turned off.")
-
-(defvar icomplete-vertical-old-prospects-height nil
-  "Store last known value of `icomplete-prospects-height'.
-Records the value when `icomplete-vertical-mode' is turned on.
-It is then restored when icomplete-vertical-mode is turned off.")
+(defmacro icomplete-vertical-save-values (saved &rest bindings)
+  "Bind variables according to BINDINGS and set SAVED to an alist
+of their previous values. Each element of BINDINGS is a
+list (SYMBOL VALUEFORM) which binds SYMBOL to the value of
+VALUEFORM."
+  `(setq
+    ,saved (list ,@(cl-loop for (var _) in bindings
+                            collect `(cons ',var ,var)))
+    ,@(apply #'append bindings)))
 
 (defun icomplete-vertical-format-completions (completions)
   "Reformat COMPLETIONS for better aesthetics.
@@ -77,23 +73,19 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
   :global t
   (if icomplete-vertical-mode
       (progn
-        (setq icomplete-vertical-old-separator icomplete-separator
-              icomplete-separator "\n"
-              icomplete-vertical-old-hide-common icomplete-hide-common-prefix
-              icomplete-hide-common-prefix nil
-              icomplete-vertical-old-resize-mini-windows resize-mini-windows
-              resize-mini-windows 'grow-only
-              icomplete-vertical-old-prospects-height icomplete-prospects-height
-              icomplete-prospects-height icomplete-vertical-prospects-height)
+        (icomplete-vertical-save-values
+         icomplete-vertical-saved-state
+         (icomplete-separator "\n")
+         (icomplete-hide-common-prefix nil)
+         (resize-mini-windows 'grow-only)
+         (icomplete-prospects-height icomplete-vertical-prospects-height))
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
                   #'icomplete-vertical-minibuffer-setup
                   5))
-    (setq icomplete-separator icomplete-vertical-old-separator
-          icomplete-hide-common-prefix icomplete-vertical-old-hide-common
-          resize-mini-windows icomplete-vertical-old-resize-mini-windows
-          icomplete-prospects-height icomplete-vertical-old-prospects-height)
+    (cl-loop for (variable . value) in icomplete-vertical-saved-state
+             do (set variable value))
     (advice-remove 'icomplete-completions
                    #'icomplete-vertical-format-completions)
     (remove-hook 'icomplete-minibuffer-setup-hook
