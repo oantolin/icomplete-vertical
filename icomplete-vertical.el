@@ -35,7 +35,7 @@
   :group 'icomplete)
 
 (defvar icomplete-vertical-saved-state nil
-  "Alist of certain variables and their last know value.
+  "Alist of certain variables and their last known value.
 Records the values when `icomplete-vertical-mode' is turned on.
 The values are restored when icomplete-vertical-mode is turned off.")
 
