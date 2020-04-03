@@ -43,6 +43,16 @@ It is then restored when icomplete-vertical-mode is turned off.")
 Records the value when `icomplete-vertical-mode' is turned on.
 It is then restored when icomplete-vertical-mode is turned off.")
 
+(defvar icomplete-vertical-old-resize-mini-windows nil
+  "Store last known value of `resize-mini-windows'.
+Records the value when `icomplete-vertical-mode' is turned on.
+It is then restored when icomplete-vertical-mode is turned off.")
+
+(defvar icomplete-vertical-old-prospects-height nil
+  "Store last known value of `icomplete-prospects-height'.
+Records the value when `icomplete-vertical-mode' is turned on.
+It is then restored when icomplete-vertical-mode is turned off.")
+
 (defun icomplete-vertical-format-completions (completions)
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
@@ -70,14 +80,20 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
         (setq icomplete-vertical-old-separator icomplete-separator
               icomplete-separator "\n"
               icomplete-vertical-old-hide-common icomplete-hide-common-prefix
-              icomplete-hide-common-prefix nil)
+              icomplete-hide-common-prefix nil
+              icomplete-vertical-old-resize-mini-windows resize-mini-windows
+              resize-mini-windows 'grow-only
+              icomplete-vertical-old-prospects-height icomplete-prospects-height
+              icomplete-prospects-height icomplete-vertical-prospects-height)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
                   #'icomplete-vertical-minibuffer-setup
                   5))
     (setq icomplete-separator icomplete-vertical-old-separator
-          icomplete-hide-common-prefix icomplete-vertical-old-hide-common)
+          icomplete-hide-common-prefix icomplete-vertical-old-hide-common
+          resize-mini-windows icomplete-vertical-old-resize-mini-windows
+          icomplete-prospects-height icomplete-vertical-old-prospects-height)
     (advice-remove 'icomplete-completions
                    #'icomplete-vertical-format-completions)
     (remove-hook 'icomplete-minibuffer-setup-hook
