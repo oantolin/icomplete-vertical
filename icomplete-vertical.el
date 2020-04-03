@@ -65,7 +65,7 @@ To be used as filter return advice for `icomplete-completions'."
 Meant to be added to `icomplete-minibuffer-setup-hook'."
   (visual-line-mode -1) ;just in case
   (setq truncate-lines t)
-  (enlarge-window (1- icomplete-vertical-prospects-height)))
+  (enlarge-window icomplete-vertical-prospects-height))
 
 ;;;###autoload
 (define-minor-mode icomplete-vertical-mode
