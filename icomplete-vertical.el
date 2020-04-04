@@ -72,9 +72,18 @@ To be used as filter return advice for `icomplete-completions'."
 (defun icomplete-vertical-minibuffer-setup ()
   "Setup minibuffer for a vertical icomplete session.
 Meant to be added to `icomplete-minibuffer-setup-hook'."
-  (visual-line-mode -1) ;just in case
+  (visual-line-mode -1) ; just in case
   (setq truncate-lines t)
-  (enlarge-window icomplete-vertical-prospects-height))
+  (enlarge-window
+   (- icomplete-vertical-prospects-height
+      (1- (window-height)))))
+
+(defun icomplete-vertical-minibuffer-teardown ()
+  "Undo minibuffer setup for a vertical icomplete session.
+This is used when toggling `icomplete-vertical-mode' while the
+minibuffer is in use."
+  (setq truncate-lines nil)
+  (enlarge-window (1+ (- (window-height)))))
 
 ;;;###autoload
 (define-minor-mode icomplete-vertical-mode
@@ -92,13 +101,17 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
                   #'icomplete-vertical-minibuffer-setup
-                  5))
+                  5)
+        (when (window-minibuffer-p)
+          (icomplete-vertical-minibuffer-setup)))
     (cl-loop for (variable . value) in icomplete-vertical-saved-state
              do (set variable value))
     (advice-remove 'icomplete-completions
                    #'icomplete-vertical-format-completions)
     (remove-hook 'icomplete-minibuffer-setup-hook
-                 #'icomplete-vertical-minibuffer-setup)))
+                 #'icomplete-vertical-minibuffer-setup)
+    (when (window-minibuffer-p)
+      (icomplete-vertical-minibuffer-teardown))))
 
 (provide 'icomplete-vertical)
 ;;; icomplete-vertical.el ends here
