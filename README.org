@@ -27,11 +27,25 @@ vertically, so I bound =icomplete-vertical-mode= to a key and go back
 and forth indecisively ---you can even toggle it during a minibuffer
 completion session.
 
-You can configure how tall you want the minibuffer during completion
-by customizing the variable =icomplete-vertical-prospects-height=. This
-is a separate variable from =icomplete-prospects-height= because if you
-use icomplete both horizontally and vertically you are likely to want
-different values for the two settings.
+You can configure the maximum number of lines you want to use to
+display candidates during completion by customizing the variable
+=icomplete-vertical-prospects-height=. This is a separate variable from
+=icomplete-prospects-height= because if you use icomplete both
+horizontally and vertically you are likely to want different values
+for the two settings.
+
+The standard Emacs variable =resize-mini-windows= can take the following
+values:
+
+- =nil= :: means don’t automatically resize the minibuffer.
+- =grow-only= :: the default, means let the minibuffer grow only.
+- =t= ::  means resize them to fit the text displayed in them by either
+  growing or shrinking the minibuffer.
+
+This package respects =resize-mini-windows= (up to a maximum height of
+=icomplete-vertical-prospects-height=) if it is set to either =t= or
+=grow-only=. A setting of =nil= would be unusuable with a vertical display
+of candidates, so that one acts as =grow-only=.
 
 * Screenshots
 
