@@ -83,6 +83,6 @@ shrink depending on the number of candidates ---up to a maximum of
 =icomplete-vertical-prospects-height= lines of candidates.
 
 On the other hand, if =resize-mini-windows= is set to any other value
-(either =nil= or ='grow-only=) then =icomplete-vertical-mode= will keep the
+(either =nil= or =grow-only=) then =icomplete-vertical-mode= will keep the
 height fixed at =icomplete-vertical-prospects-height= lines of
 candidates.
