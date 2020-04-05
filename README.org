@@ -75,7 +75,7 @@ want different values for the two settings.
 You can control whether the minibuffer has a fixed height or grows and
 shrinks as the number of candidates changes while using
 =icomplete-vertical-mode= completion. This is controlled by the
-value standard Emacs variable =resize-mini-windows= at the time
+value  of the standard Emacs variable =resize-mini-windows= at the time
 =icomplete-vertical-mode= is activated.
 
 If =resize-mini-windows= is set to =t=, then the minibuffer will grow and
