@@ -73,7 +73,7 @@ To be used as filter return advice for `icomplete-completions'."
                              icomplete-vertical-saved-state)))
         (enlarge-window (- (min icomplete-vertical-prospects-height
                                 (cl-count ?\n reformatted))
-                           (window-height))))
+                           (1- (window-height)))))
       reformatted)))
 
 (defun icomplete-vertical-minibuffer-setup ()
