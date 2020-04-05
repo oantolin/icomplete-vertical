@@ -13,7 +13,22 @@ that has two problems which =icomplete-vertical-mode= solves:
    typing in. This makes it harder to visually scan the candidates
    as the first one starts in a different column from the others.
 
-The screenshots below explain this better than words can.
+The screenshots explain this better than words can.
+
+* Screenshots
+
+This is what =describe-function= looks like in =icomplete-vertical-mode=
+(with Protesilaos Stavrou's [[https://gitlab.com/protesilaos/modus-themes][lovely modus-operandi theme]]):
+
+[[images/describe-function-vertical.png]]
+
+For comparison this is what you get /without/ this package, simply
+setting =icomplete-separator= to a newline:
+
+[[images/describe-function-just-sep.png]]
+
+Notice the missing prompt and text typed so far (=icom=), and how the
+first candidate (=icomplete-tidy=) is on the line where you type.
 
 * Installation and usage
 
@@ -25,39 +40,49 @@ also active.
 Personally, I can't decide whether I prefer icomplete horizontally or
 vertically, so I bound =icomplete-vertical-mode= to a key and go back
 and forth indecisively ---you can even toggle it during a minibuffer
-completion session.
+completion session!
 
-You can configure the maximum number of lines you want to use to
-display candidates during completion by customizing the variable
-=icomplete-vertical-prospects-height=. This is a separate variable from
-=icomplete-prospects-height= because if you use icomplete both
-horizontally and vertically you are likely to want different values
-for the two settings.
+* About Icomplete
 
-The standard Emacs variable =resize-mini-windows= can take the following
-values:
+This package is meant to be used in conjunction with Icomplete, which
+is a built-in Emacs completion UI (similar to Ido) that provides a
+display of the completion candidates and interactive narrowing.
+Icomplete has several configuration options but even just sticking
+=(icomplete-mode)= in your init file is enough to make it useful. The
+documentation that comes with Emacs is a little sparse (see =(info
+"(Emacs)Icomplete")=), so for a demo and longer introduction see
+Protesilaos Stavrou's [[https://youtu.be/vtwYIKUZwEM][icomplete video]].
 
-- =nil= means don’t automatically resize the minibuffer.
-- =grow-only=, the default, means let the minibuffer grow only.
-- =t= means resize them to fit the text displayed in them by either
-  growing or shrinking the minibuffer.
+Icomplete is a UI for the built-in completion system in Emacs which is
+very customizable and has various styles of matching candidates
+(notably including =flex= completion starting from Emacs 27). See the
+Completion section of the manual, particularly the subsections =(info
+"(Emacs)Completion Styles")= and =(info "(Emacs)Completion Options")=.
 
-This package respects =resize-mini-windows= (up to a maximum height of
-=icomplete-vertical-prospects-height=) if it is set to either =t= or
-=grow-only=. A setting of =nil= would be unusuable with a vertical display
-of candidates, so that one acts as =grow-only=.
+* Configuration for icomplete-vertical
 
-* Screenshots
+** Maximum minibuffer height
 
-This is what =describe-function= looks like in =icomplete-vertical-mode=
-(with Protesilaos Stavrou's [[https://gitlab.com/protesilaos/modus-themes][lovely modus-operandi theme]]):
+The maximum number of lines you want to use to display candidates
+during completion is determined by the variable
+=icomplete-vertical-prospects-height=, which you can customize. This was
+made a separate variable from =icomplete-prospects-height= because if
+you use icomplete both horizontally and vertically you are likely to
+want different values for the two settings.
 
-[[images/describe-function-vertical.png]]
+** Fixed or variable height minibuffer
 
-For comparison this is what you get without this package, simply
-setting =icomplete-separator= to a newline:
+You can control whether the minibuffer has a fixed height or grows and
+shrinks as the number of candidates changes while using
+=icomplete-vertical-mode= completion. This is controlled by the
+value standard Emacs variable =resize-mini-windows= at the time
+=icomplete-vertical-mode= is activated.
 
-[[images/describe-function-just-sep.png]]
+If =resize-mini-windows= is set to =t=, then the minibuffer will grow and
+shrink depending on the number of candidates ---up to a maximum of
+=icomplete-vertical-prospects-height= lines of candidates.
 
-Notice the missing prompt and text typed so far (=icom=), and how the
-first candidate (=icomplete-tidy=) is on the line where you type.
+On the other hand, if =resize-mini-windows= is set to any other value
+(either =nil= or ='grow-only=) then =icomplete-vertical-mode= will keep the
+height fixed at =icomplete-vertical-prospects-height= lines of
+candidates.
