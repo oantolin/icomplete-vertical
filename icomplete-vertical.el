@@ -62,7 +62,7 @@ VALUEFORM."
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
   (save-match-data
-    (if (string-match "^\\((.*)\\|\\[.+\\]\\)?{\\(\\(?:.\\|\n\\)+\\)}"
+    (if (string-match "^\\((.*)\\|\\[.*\\]\\)?{\\(\\(?:.\\|\n\\)*\\)}"
                       completions)
         (format "%s \n%s"
                 (or (match-string 1 completions) "")
