@@ -62,12 +62,19 @@ VALUEFORM."
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
   (save-match-data
-    (if (string-match "^\\((.*)\\|\\[.*\\]\\)?{\\(\\(?:.\\|\n\\)*\\)}"
-                      completions)
-        (format "%s \n%s"
-                (or (match-string 1 completions) "")
-                (match-string 2 completions))
-      completions)))
+    (let ((reformatted
+           (if (string-match "^\\((.*)\\|\\[.*\\]\\)?{\\(\\(?:.\\|\n\\)*\\)}"
+                             completions)
+               (format "%s \n%s"
+                       (or (match-string 1 completions) "")
+                       (match-string 2 completions))
+             completions)))
+      (when (eq t (cdr (assq 'resize-mini-windows
+                             icomplete-vertical-saved-state)))
+        (enlarge-window (- (min icomplete-vertical-prospects-height
+                                (cl-count ?\n reformatted))
+                           (window-height))))
+      reformatted)))
 
 (defun icomplete-vertical-minibuffer-setup ()
   "Setup minibuffer for a vertical icomplete session.
