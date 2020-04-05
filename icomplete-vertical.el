@@ -90,7 +90,7 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
 This is used when toggling `icomplete-vertical-mode' while the
 minibuffer is in use."
   (setq truncate-lines nil)
-  (enlarge-window (1+ (- (window-height)))))
+  (enlarge-window (- (1- (window-height)))))
 
 ;;;###autoload
 (define-minor-mode icomplete-vertical-mode
@@ -119,6 +119,12 @@ minibuffer is in use."
                  #'icomplete-vertical-minibuffer-setup)
     (when (window-minibuffer-p)
       (icomplete-vertical-minibuffer-teardown))))
+
+;;;###autoload
+(defun icomplete-vertical-toggle ()
+  "Toggle icomplete-vertical-mode without a message in the echo area."
+  (interactive)
+  (icomplete-vertical-mode 'toggle))
 
 (provide 'icomplete-vertical)
 ;;; icomplete-vertical.el ends here
