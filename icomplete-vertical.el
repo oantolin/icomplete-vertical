@@ -30,7 +30,7 @@
 ;;    the text you enter.
 ;;
 ;; 2. The first candidate appears on the same line as the one you are
-;;    typing in. This makes it harder to visually scan the candidates
+;;    typing in.  This makes it harder to visually scan the candidates
 ;;    as the first one starts in a different column from the others.
 
 ;;; Code:
@@ -122,7 +122,7 @@ minibuffer is in use."
 
 ;;;###autoload
 (defun icomplete-vertical-toggle ()
-  "Toggle icomplete-vertical-mode without a message in the echo area."
+  "Toggle `icomplete-vertical-mode' without echo area message."
   (interactive)
   (icomplete-vertical-mode 'toggle))
 
