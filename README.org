@@ -37,10 +37,12 @@ For now, put =icomplete-vertical.el= somewhere in your =load-path=, and
 icomplete-vertical-mode=. It only does something when =icomplete-mode= is
 also active.
 
-Personally, I can't decide whether I prefer icomplete horizontally or
-vertically, so I bound =icomplete-vertical-mode= to a key and go back
-and forth indecisively ---you can even toggle it during a minibuffer
-completion session!
+You might also want to bind =icomplete-vertical-toggle= to some key in
+the =icomplete-minibuffer-map= keymap. I use =C-v=, for "vertical", since
+paging in the minibuffer isn't very useful. (Running
+=icomplete-vertical-toggle= has the same toggling effect as running
+=icomplete-vertical-mode=, except that it doesn't print a message in the
+echo area disturbing your candidate display until the next keypress.)
 
 * About Icomplete
 
@@ -86,3 +88,38 @@ On the other hand, if =resize-mini-windows= is set to any other value
 (either =nil= or =grow-only=) then =icomplete-vertical-mode= will keep the
 height fixed at =icomplete-vertical-prospects-height= lines of
 candidates.
+
+** Defining your own vertical commands
+
+If you want to use Icomplete horizontally most of the time but want to
+define a few commands which you always want to start in
+=icomplete-vertical-mode=, use the =icomplete-vertical-do= macro.
+
+A typical example is a command to select an item from the kill-ring
+using completion and insert it into the current buffer. Since often
+kill-ring entries are multiline we'll want (1) the completion to start
+in vertical mode, (2) the number of lines used to display entries to
+be relatively large, and (3) the separator to be, say, a horizontal
+line:
+
+#+begin_src emacs-lisp
+  (defun insert-kill-ring-item ()
+    "Insert item from kill-ring, selected with completion."
+    (interactive)  
+    (icomplete-vertical-do (:separator "\n——————————\n" :height 20)
+      (insert (completing-read "Yank: " kill-ring nil t))))
+#+end_src
+
+Note that the completion merely /starts out/ in vertical mode: nothing
+keeps you from toggling between vertical and horizontal while
+=insert-kill-ring-item= is active. Once the command finishes running,
+your previous completion configuration will be restored.
+
+Both the =:separator= and =:height= are optional and default to a single
+newline and to =icomplete-vertical-prospects-height=. The separator
+should of course contain at least one newline, and it can have text
+properties which control the display ---for example, you can apply
+a different face to it.
+
+This packages only contains the =icomplete-vertical-do= macro for your
+own use, it does not predefine any commands that use it.

@@ -71,7 +71,7 @@ To be used as filter return advice for `icomplete-completions'."
              completions)))
       (when (eq t (cdr (assq 'resize-mini-windows
                              icomplete-vertical-saved-state)))
-        (enlarge-window (- (min icomplete-vertical-prospects-height
+        (enlarge-window (- (min icomplete-prospects-height
                                 (cl-count ?\n reformatted))
                            (1- (window-height)))))
       reformatted)))
@@ -81,9 +81,7 @@ To be used as filter return advice for `icomplete-completions'."
 Meant to be added to `icomplete-minibuffer-setup-hook'."
   (visual-line-mode -1) ; just in case
   (setq truncate-lines t)
-  (enlarge-window
-   (- icomplete-vertical-prospects-height
-      (1- (window-height)))))
+  (enlarge-window (- icomplete-prospects-height (1- (window-height)))))
 
 (defun icomplete-vertical-minibuffer-teardown ()
   "Undo minibuffer setup for a vertical icomplete session.
@@ -125,6 +123,33 @@ minibuffer is in use."
   "Toggle `icomplete-vertical-mode' without echo area message."
   (interactive)
   (icomplete-vertical-mode 'toggle))
+
+(defmacro icomplete-vertical-do (params &rest body)
+  "Evaluate BODY with vertical completion configured by PARAMS.
+The PARAMS argument should be an alist with allowed keys
+`:separator' and `:height'. The separator should contain a
+newline and can have text properties controlling its display."
+  (declare (indent 1))
+  (let ((hook (make-symbol "hook"))
+        (verticalp (make-symbol "verticalp")))
+    (cl-flet ((config (key var)
+                      (let ((val (plist-get params key)))
+                        (when val `(,var ,val)))))
+      `(cl-flet
+           ((,hook ()
+                   (when icomplete-vertical-mode
+                     (setq ,@(config :separator 'icomplete-separator)
+                           ,@(config :height 'icomplete-prospects-height)))))
+         (let ((,verticalp icomplete-vertical-mode))
+           (icomplete-vertical-mode -1)
+           (unwind-protect
+               (progn
+                 (add-hook 'icomplete-vertical-mode-hook #',hook)
+                 (icomplete-vertical-mode)
+                 ,@body)
+             (icomplete-vertical-mode -1)
+             (remove-hook 'icomplete-vertical-mode-hook #',hook)
+             (when ,verticalp (icomplete-vertical-mode))))))))
 
 (provide 'icomplete-vertical)
 ;;; icomplete-vertical.el ends here
