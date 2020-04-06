@@ -91,22 +91,22 @@ candidates.
 
 ** Defining your own vertical commands
 
-If you want to use Icomplete horizontally most of the time but want to
-define a few commands which you always want to start in
-=icomplete-vertical-mode=, use the =icomplete-vertical-do= macro.
+If you choose to use Icomplete horizontally by default but want to
+define a few commands that leverage =icomplete-vertical-mode=, use the
+=icomplete-vertical-do= macro.  Use this for lists with naturally long
+candidates, such as filesystem paths or kill-ring entries.
 
-A typical example is a command to select an item from the kill-ring
-using completion and insert it into the current buffer. Since often
-kill-ring entries are multiline we'll want (1) the completion to start
-in vertical mode, (2) the number of lines used to display entries to
-be relatively large, and (3) the separator to be, say, a horizontal
-line:
+For example, let's implement a command to yank from the kill-ring
+using completion. Often the kills are multiline, so for improved
+usability we'll need (1) the completion to start in vertical mode, (2)
+the number of lines used to display entries to be relatively large,
+and (3) the separator to be, say, a dotted line:
 
 #+begin_src emacs-lisp
   (defun insert-kill-ring-item ()
     "Insert item from kill-ring, selected with completion."
-    (interactive)  
-    (icomplete-vertical-do (:separator "\n——————————\n" :height 20)
+    (interactive)
+    (icomplete-vertical-do (:separator "\n··········\n" :height 20)
       (insert (completing-read "Yank: " kill-ring nil t))))
 #+end_src
 
@@ -116,10 +116,17 @@ keeps you from toggling between vertical and horizontal while
 your previous completion configuration will be restored.
 
 Both the =:separator= and =:height= are optional and default to a single
-newline and to =icomplete-vertical-prospects-height=, respectively. The
-separator should of course contain at least one newline, and it can have
-text properties which control the display ---for example, you can apply
-a different face to it.
+newline and to =icomplete-vertical-prospects-height=, respectively ---if
+you omit both parts you still need to include the empty parenthesis:
+=(icomplete-vertical-do () ...)=!. The separator should of course
+contain at least one newline, and it can have text properties which
+control the display ---for example, you could apply a different face
+to it:
 
-This packages only contains the =icomplete-vertical-do= macro for your
-own use, it does not predefine any commands that use it.
+#+begin_src emacs-lisp
+  (:separator (propertize "\n··········\n" 'face 'shadow) :height 20)
+#+end_src
+
+This packages contains the =icomplete-vertical-do= macro for you to
+implement your own commands. It does not define any commands that use
+the macro.
