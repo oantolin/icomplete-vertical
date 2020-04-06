@@ -116,9 +116,9 @@ keeps you from toggling between vertical and horizontal while
 your previous completion configuration will be restored.
 
 Both the =:separator= and =:height= are optional and default to a single
-newline and to =icomplete-vertical-prospects-height=. The separator
-should of course contain at least one newline, and it can have text
-properties which control the display ---for example, you can apply
+newline and to =icomplete-vertical-prospects-height=, respectively. The
+separator should of course contain at least one newline, and it can have
+text properties which control the display ---for example, you can apply
 a different face to it.
 
 This packages only contains the =icomplete-vertical-do= macro for your
