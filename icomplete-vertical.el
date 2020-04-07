@@ -47,6 +47,23 @@
   :type 'integer
   :group 'icomplete-vertical)
 
+(defun icomplete-vertical-set-separator (separator)
+  "Set the vertical candidate separator to SEPARATOR."
+  (set-default 'icomplete-vertical-separator separator)
+  (when icomplete-vertical-mode
+    (setq icomplete-separator separator)))
+
+(defcustom icomplete-vertical-separator "\n"
+  "Candidate separator when using icomplete vertically.
+If you change the value using setq it won't take effect until the
+next time you enter `icomplete-vertical-mode'.  Customizing makes
+it take effect immediately.  To change the value from Lisp code
+use `icomplete-vertical-set-separator'."
+  :type 'string
+  :group 'icomplete-vertical
+  :set (lambda (_ separator)
+         (icomplete-vertical-set-separator separator)))
+
 (defvar icomplete-vertical-saved-state nil
   "Alist of certain variables and their last known value.
 Records the values when `icomplete-vertical-mode' is turned on.
@@ -103,7 +120,7 @@ minibuffer is in use."
       (progn
         (icomplete-vertical-save-values
          icomplete-vertical-saved-state
-         (icomplete-separator "\n")
+         (icomplete-separator icomplete-vertical-separator)
          (icomplete-hide-common-prefix nil)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
@@ -132,7 +149,7 @@ minibuffer is in use."
 (defmacro icomplete-vertical-do (params &rest body)
   "Evaluate BODY with vertical completion configured by PARAMS.
 The PARAMS argument should be an alist with allowed keys
-`:separator' and `:height'. The separator should contain a
+`:separator' and `:height'.  The separator should contain a
 newline and can have text properties controlling its display."
   (declare (indent 1))
   (let ((hook (make-symbol "hook"))
