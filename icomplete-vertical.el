@@ -50,19 +50,38 @@
 (defun icomplete-vertical-set-separator (separator)
   "Set the vertical candidate separator to SEPARATOR."
   (set-default 'icomplete-vertical-separator separator)
-  (when icomplete-vertical-mode
-    (setq icomplete-separator separator)))
+  (when (bound-and-true-p icomplete-vertical-mode)
+    (setq icomplete-separator separator)
+    (icomplete-vertical--apply-separator-face)))
 
 (defcustom icomplete-vertical-separator "\n"
   "Candidate separator when using icomplete vertically.
+The separator should contain at least one newline.
+
 If you change the value using setq it won't take effect until the
 next time you enter `icomplete-vertical-mode'.  Customizing makes
 it take effect immediately.  To change the value from Lisp code
-use `icomplete-vertical-set-separator'."
-  :type 'string
+use `icomplete-vertical-set-separator'.
+
+If you want to set the value to a propertized string from a
+Custom buffer, select the \"Custom propertized string\" type from
+the list, and to enter the value use C-u M-: (propertize ...)."
+  :type '(choice (const :tag "Newline" "\n")
+                 (const :tag "Solid line" "\n——————————\n")
+                 (const :tag "Dashed line" "\n----------\n")
+                 (const :tag "Dotted line" "\n··········\n")
+                 (string :tag "Custom string")
+                 (sexp :tag "Custom propertized string"))
   :group 'icomplete-vertical
   :set (lambda (_ separator)
          (icomplete-vertical-set-separator separator)))
+
+(defface icomplete-vertical-separator
+  '((default (:inherit shadow)))
+  "Face for icomplete-vertical separator.
+This face is only applied if the separator string does not
+already have face properties."
+  :group 'icomplete-vertical)
 
 (defvar icomplete-vertical-saved-state nil
   "Alist of certain variables and their last known value.
@@ -105,6 +124,15 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
   (setq truncate-lines t)
   (enlarge-window (- icomplete-prospects-height (1- (window-height)))))
 
+(defun icomplete-vertical--apply-separator-face ()
+  "Apply the default separator face if the separator is a faceless string."
+  (unless (or (get-text-property 0 'face icomplete-separator)
+              (next-single-property-change 0 'face icomplete-separator))
+    (add-face-text-property 0 (length icomplete-separator)
+                            'icomplete-vertical-separator
+                            nil
+                            icomplete-separator)))
+
 (defun icomplete-vertical-minibuffer-teardown ()
   "Undo minibuffer setup for a vertical icomplete session.
 This is used when toggling `icomplete-vertical-mode' while the
@@ -124,6 +152,7 @@ minibuffer is in use."
          (icomplete-hide-common-prefix nil)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
+        (icomplete-vertical--apply-separator-face)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
@@ -161,7 +190,8 @@ newline and can have text properties controlling its display."
            ((,hook ()
                    (when icomplete-vertical-mode
                      (setq ,@(config :separator 'icomplete-separator)
-                           ,@(config :height 'icomplete-prospects-height)))))
+                           ,@(config :height 'icomplete-prospects-height))
+                     (icomplete-vertical--apply-separator-face))))
          (let ((,verticalp icomplete-vertical-mode))
            (icomplete-vertical-mode -1)
            (unwind-protect
