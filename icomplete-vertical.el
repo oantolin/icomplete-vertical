@@ -34,13 +34,18 @@
 ;;    as the first one starts in a different column from the others.
 
 ;;; Code:
+
 (require 'icomplete)
 (require 'cl-lib)
+
+(defgroup icomplete-vertical nil
+  "Display icomplete candidates vertically."
+  :group 'icomplete)
 
 (defcustom icomplete-vertical-prospects-height 10
   "Minibuffer height when using icomplete vertically."
   :type 'integer
-  :group 'icomplete)
+  :group 'icomplete-vertical)
 
 (defvar icomplete-vertical-saved-state nil
   "Alist of certain variables and their last known value.
