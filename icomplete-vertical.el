@@ -3,7 +3,10 @@
 ;; Copyright (C) 2020  Omar Antolín Camarena
 
 ;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
-;; Keywords: convenience
+;; Keywords: convenience, completion
+;; Version: 0.1
+;; Homepage: https://github.com/oantolin/icomplete-vertical
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -76,13 +79,15 @@
 The separator should contain at least one newline.
 
 If you change the value using setq it won't take effect until the
-next time you enter `icomplete-vertical-mode'.  Customizing makes
+next time you enter Icomplete Vertical mode.  Customizing makes
 it take effect immediately.  To change the value from Lisp code
 use `icomplete-vertical-set-separator'.
 
 If you want to set the value to a propertized string from a
 Custom buffer, select the \"Custom propertized string\" type from
-the list, and to enter the value use C-u M-: (propertize ...)."
+the list, and to enter the value use \\[eval-expression] with a
+universal prefix argument to insert the result of a `propertize'
+call."
   :type '(choice (const :tag "Newline" "\n")
                  (const :tag "Solid line" "\n——————————\n")
                  (const :tag "Dashed line" "\n----------\n")
@@ -102,11 +107,11 @@ already have face properties."
 
 (defvar icomplete-vertical-saved-state nil
   "Alist of certain variables and their last known value.
-Records the values when `icomplete-vertical-mode' is turned on.
-The values are restored when icomplete-vertical-mode is turned off.")
+Records the values when Icomplete Vertical mode is turned on.
+The values are restored when Icomplete Vertical mode is turned off.")
 
 (defmacro icomplete-vertical-save-values (saved &rest bindings)
-  "Save state of variables prior to `icomplete-vertical-mode' activation.
+  "Save state of variables prior to Icomplete Vertical mode activation.
 Bind variables according to BINDINGS and set SAVED to an alist of
 their previous values.  Each element of BINDINGS is a
 list (SYMBOL VALUEFORM) which binds SYMBOL to the value of
@@ -152,7 +157,7 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
 
 (defun icomplete-vertical-minibuffer-teardown ()
   "Undo minibuffer setup for a vertical icomplete session.
-This is used when toggling `icomplete-vertical-mode' while the
+This is used when toggling Icomplete Vertical mode while the
 minibuffer is in use."
   (setq truncate-lines nil)
   (enlarge-window (- (1- (window-height)))))
@@ -188,7 +193,7 @@ minibuffer is in use."
 
 ;;;###autoload
 (defun icomplete-vertical-toggle ()
-  "Toggle `icomplete-vertical-mode' without echo area message."
+  "Toggle Icomplete Vertical mode without echo area message."
   (interactive)
   (icomplete-vertical-mode 'toggle))
 
