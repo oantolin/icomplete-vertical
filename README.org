@@ -62,7 +62,6 @@ Completion section of the manual, particularly the subsections =(info
 "(Emacs)Completion Styles")= and =(info "(Emacs)Completion Options")=.
 
 * Configuration for icomplete-vertical
-
 ** Maximum minibuffer height
 
 The maximum number of lines you want to use to display candidates
@@ -88,6 +87,21 @@ On the other hand, if =resize-mini-windows= is set to any other value
 (either =nil= or =grow-only=) then =icomplete-vertical-mode= will keep the
 height fixed at =icomplete-vertical-prospects-height= lines of
 candidates.
+
+** The candidate separator
+
+The value of variable =icomplete-vertical-separator= is used to separate
+the candidates in vertical completion; it defaults to a single newline
+and should always contain at least one newline. You can customize this
+variable and the custom UI will offer some predefined choices: a
+newline, a dashed line, a dotted line, a solid line.
+
+The variable can be set to a string with text properties, such as
+faces. If the string has any faces applied, they will be
+respected. If, on the other hand, it has no faces at all, then the
+=icomplete-vertical-separator= face will be applied to it. That face by
+default simply inherits from the =shadow= face used for deemphasized
+text.
 
 ** Defining your own vertical commands
 
@@ -115,16 +129,23 @@ keeps you from toggling between vertical and horizontal while
 =insert-kill-ring-item= is active. Once the command finishes running,
 your previous completion configuration will be restored.
 
-Both the =:separator= and =:height= are optional and default to a single
-newline and to =icomplete-vertical-prospects-height=, respectively ---if
-you omit both parts you still need to include the empty parenthesis:
-=(icomplete-vertical-do () ...)=!. The separator should of course
-contain at least one newline, and it can have text properties which
-control the display ---for example, you could apply a different face
-to it:
+Both the =:separator= and =:height= are optional and default to
+=icomplete-vertical-separator= and to
+=icomplete-vertical-prospects-height=, respectively. If you omit both
+parts you still need to include the empty parenthesis:
+=(icomplete-vertical-do () ...)=!.
+
+Everything described above for the variable
+=icomplete-vertical-separator=, applies equally to the separator passed
+to =icomplete-vertical-do=: it should contain at least one newline; it
+can have text properties, such as faces, which control the display;
+and if it has no faces it will have =icomplete-vertical-separator= face
+applied to it. For example, the following specification makes a red
+dotted line:
 
 #+begin_src emacs-lisp
-  (:separator (propertize "\n··········\n" 'face 'shadow) :height 20)
+  (:separator (propertize "\n··········\n" 'face '(:foreground "red"))
+   :height 20)
 #+end_src
 
 This packages contains the =icomplete-vertical-do= macro for you to
