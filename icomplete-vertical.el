@@ -172,6 +172,7 @@ minibuffer is in use."
          icomplete-vertical-saved-state
          (icomplete-separator icomplete-vertical-separator)
          (icomplete-hide-common-prefix nil)
+         (icomplete-show-matches-on-no-input t)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
         (icomplete-vertical--apply-separator-face)
