@@ -72,9 +72,45 @@
   (set-default 'icomplete-vertical-separator separator)
   (when (bound-and-true-p icomplete-vertical-mode)
     (setq icomplete-separator separator)
-    (icomplete-vertical--apply-separator-face)))
+    (icomplete-vertical--setup-separator)))
 
-(defcustom icomplete-vertical-separator "\n"
+(defcustom icomplete-vertical-separator-alist
+  '((newline     . "\n")
+    (solid-line  . "\n——————————\n")
+    (dashed-line . "\n----------\n")
+    (dotted-line . "\n··········\n"))
+  "Alist of named candidate separators for vertical icompletion.
+The symbols used as keys in this alist can be used as values for
+`icomplete-vertical-separator', as arguments to
+`icomplete-vertical-set-separator' or as the `:separator' option
+of `icomplete-vertical-do'.
+
+If you want to add a propertized string as a named separator from
+a Custom buffer, select the \"Propertized string\" type from the
+list, focus its text field, and enter its value with
+\\[universal-argument] \\[eval-expression] followed by your
+`propertize' call."
+  :type '(alist
+          :key-type (symbol :tag "Name")
+          :value-type
+          (choice (string :tag "String")
+                  (sexp :tag "Propertized string")))
+  :group 'icomplete-vertical)
+
+(define-widget 'icomplete-vertical-named-separator 'choice
+  "A named separator for Icomplete Vertical.
+The valid names are the keys of the variable
+`icomplete-vertical-separator-alist'."
+  :convert-widget
+  (lambda (widget)
+    (widget-put widget :args
+     (cl-loop for (key . _) in icomplete-vertical-separator-alist
+              for name = (replace-regexp-in-string "-" " "
+                            (capitalize (symbol-name key)))
+              collect (widget-convert `(const :tag ,name ,key))))
+    widget))
+
+(defcustom icomplete-vertical-separator 'newline
   "Candidate separator when using icomplete vertically.
 The separator should contain at least one newline.
 
@@ -88,12 +124,10 @@ Custom buffer, select the \"Custom propertized string\" type from
 the list, focus its text field, and enter its value with
 \\[universal-argument] \\[eval-expression] followed by your
 `propertize' call."
-  :type '(choice (const :tag "Newline" "\n")
-                 (const :tag "Solid line" "\n——————————\n")
-                 (const :tag "Dashed line" "\n----------\n")
-                 (const :tag "Dotted line" "\n··········\n")
-                 (string :tag "Custom string")
-                 (sexp :tag "Custom propertized string"))
+  :type '(choice
+          (icomplete-vertical-named-separator :tag "Named separator")
+          (string :tag "Custom string")
+          (sexp :tag "Custom propertized string"))
   :group 'icomplete-vertical
   :set (lambda (_ separator)
          (icomplete-vertical-set-separator separator)))
@@ -146,8 +180,18 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
   (setq truncate-lines t)
   (enlarge-window (- icomplete-prospects-height (1- (window-height)))))
 
-(defun icomplete-vertical--apply-separator-face ()
-  "Apply the default separator face if the separator is a faceless string."
+(defun icomplete-vertical--setup-separator ()
+  "Put the Icomplete Vertical separator in canonical form.
+If it is a key in the `icomplete-vertical-separator-alist',
+replace it by the corresponding value.  Then apply the default
+separator face if the separator is a faceless string."
+  (when (symbolp icomplete-separator)
+    (let ((lookup (assq icomplete-separator
+                        icomplete-vertical-separator-alist)))
+      (if lookup
+          (setq icomplete-separator (cdr lookup))
+        (error "Unknown named icomplete-vertical separator: %s"
+               icomplete-separator))))
   (unless (or (get-text-property 0 'face icomplete-separator)
               (next-single-property-change 0 'face icomplete-separator))
     (add-face-text-property 0 (length icomplete-separator)
@@ -175,7 +219,7 @@ minibuffer is in use."
          (icomplete-show-matches-on-no-input t)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
-        (icomplete-vertical--apply-separator-face)
+        (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
         (add-hook 'icomplete-minibuffer-setup-hook
@@ -214,7 +258,7 @@ newline and can have text properties controlling its display."
                    (when icomplete-vertical-mode
                      (setq ,@(config :separator 'icomplete-separator)
                            ,@(config :height 'icomplete-prospects-height))
-                     (icomplete-vertical--apply-separator-face))))
+                     (icomplete-vertical--setup-separator))))
          (let ((,verticalp icomplete-vertical-mode))
            (icomplete-vertical-mode -1)
            (unwind-protect

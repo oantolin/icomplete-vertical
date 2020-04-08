@@ -103,6 +103,11 @@ respected. If, on the other hand, it has no faces at all, then the
 default simply inherits from the =shadow= face used for deemphasized
 text.
 
+You can define named vertical completion separators by customizing
+=icomplete-vertical-separator-alist=. The symbols used as keys in this
+alist are valid values for =icomplete-vertical-separator= and for
+=:separator= options in =icomplete-vertical-do= (see below).
+
 ** Defining your own vertical commands
 
 If you choose to use Icomplete horizontally by default but want to
@@ -120,7 +125,7 @@ and (3) the separator to be, say, a dotted line:
   (defun insert-kill-ring-item ()
     "Insert item from kill-ring, selected with completion."
     (interactive)
-    (icomplete-vertical-do (:separator "\n··········\n" :height 20)
+    (icomplete-vertical-do (:separator 'dotted-line :height 20)
       (insert (completing-read "Yank: " kill-ring nil t))))
 #+end_src
 
@@ -137,11 +142,12 @@ parts you still need to include the empty parenthesis:
 
 Everything described above for the variable
 =icomplete-vertical-separator=, applies equally to the separator passed
-to =icomplete-vertical-do=: it should contain at least one newline; it
-can have text properties, such as faces, which control the display;
-and if it has no faces it will have =icomplete-vertical-separator= face
-applied to it. For example, the following specification makes a red
-dotted line:
+to =icomplete-vertical-do=: if it is a symbol it is looked up in
+=icomplete-vertical-separator-alist=; if it is a string it should
+contain at least one newline, it can have text properties, such as
+faces, which control the display, and if it has no faces it will have
+=icomplete-vertical-separator= face applied to it. For example, the
+following specification makes a red dotted line:
 
 #+begin_src emacs-lisp
   (:separator (propertize "\n··········\n" 'face '(:foreground "red"))
