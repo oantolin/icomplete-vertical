@@ -85,9 +85,9 @@ use `icomplete-vertical-set-separator'.
 
 If you want to set the value to a propertized string from a
 Custom buffer, select the \"Custom propertized string\" type from
-the list, and to enter the value use \\[eval-expression] with a
-universal prefix argument to insert the result of a `propertize'
-call."
+the list, focus its text field, and enter its value with
+\\[universal-argument] \\[eval-expression] followed by your
+`propertize' call."
   :type '(choice (const :tag "Newline" "\n")
                  (const :tag "Solid line" "\n——————————\n")
                  (const :tag "Dashed line" "\n----------\n")
