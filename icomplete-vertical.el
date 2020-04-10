@@ -57,6 +57,7 @@
 
 (require 'icomplete)
 (require 'cl-lib)
+(require 'wid-edit)
 
 (defgroup icomplete-vertical nil
   "Display icomplete candidates vertically."
