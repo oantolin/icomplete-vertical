@@ -97,6 +97,8 @@ list, focus its text field, and enter its value with
                   (sexp :tag "Propertized string")))
   :group 'icomplete-vertical)
 
+(declare-function widget-convert "wid-edit")
+
 (define-widget 'icomplete-vertical-named-separator 'choice
   "A named separator for Icomplete Vertical.
 The valid names are the keys of the variable
