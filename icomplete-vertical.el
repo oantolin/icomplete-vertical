@@ -1,4 +1,4 @@
-;;; icomplete-vertical.el --- Global minor mode to display icomplete candidates vertically  -*- lexical-binding: t; -*-
+;;; icomplete-vertical.el --- Display icomplete candidates vertically  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Omar Antolín Camarena
 
