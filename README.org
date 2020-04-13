@@ -1,19 +1,6 @@
 * Overview
 :PROPERTIES:
-:TOC:      :include all :depth 2
-:END:
-
-:CONTENTS:
-- [[#overview][Overview]]
-- [[#screenshots][Screenshots]]
-- [[#installation-and-usage][Installation and usage]]
-  - [[#quick-setup-with-use-package][Quick setup with use-package]]
-- [[#about-icomplete][About Icomplete]]
-- [[#configuration-for-icomplete-vertical][Configuration for icomplete-vertical]]
-  - [[#maximum-minibuffer-height][Maximum minibuffer height]]
-  - [[#fixed-or-variable-height-minibuffer][Fixed or variable height minibuffer]]
-  - [[#the-candidate-separator][The candidate separator]]
-  - [[#defining-your-own-vertical-commands][Defining your own vertical commands]]
+:TOC: :include all :ignore this
 :END:
 
 This package defines a global minor mode to display Icomplete
@@ -30,6 +17,18 @@ that has two problems which =icomplete-vertical-mode= solves:
    as the first one starts in a different column from the others.
 
 The screenshots explain this better than words can.
+
+:CONTENTS:
+- [[#screenshots][Screenshots]]
+- [[#installation-and-usage][Installation and usage]]
+  - [[#quick-setup-with-use-package][Quick setup with use-package]]
+- [[#about-icomplete][About Icomplete]]
+- [[#configuration-for-icomplete-vertical][Configuration for icomplete-vertical]]
+  - [[#maximum-minibuffer-height][Maximum minibuffer height]]
+  - [[#fixed-or-variable-height-minibuffer][Fixed or variable height minibuffer]]
+  - [[#the-candidate-separator][The candidate separator]]
+  - [[#defining-your-own-vertical-commands][Defining your own vertical commands]]
+:END:
 
 * Screenshots
 
