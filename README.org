@@ -1,10 +1,9 @@
-* Table of contents
+* Overview
 :PROPERTIES:
 :TOC:      :include all :depth 2
 :END:
 
 :CONTENTS:
-- [[#table-of-contents][Table of contents]]
 - [[#overview][Overview]]
 - [[#screenshots][Screenshots]]
 - [[#installation-and-usage][Installation and usage]]
@@ -16,8 +15,6 @@
   - [[#the-candidate-separator][The candidate separator]]
   - [[#defining-your-own-vertical-commands][Defining your own vertical commands]]
 :END:
-
-* Overview
 
 This package defines a global minor mode to display Icomplete
 completion candidates vertically.  You could get a vertical display
