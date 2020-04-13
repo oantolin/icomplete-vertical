@@ -1,4 +1,23 @@
-* icomplete-vertical
+* Table of contents
+:PROPERTIES:
+:TOC:      :include all :depth 2
+:END:
+
+:CONTENTS:
+- [[#table-of-contents][Table of contents]]
+- [[#overview][Overview]]
+- [[#screenshots][Screenshots]]
+- [[#installation-and-usage][Installation and usage]]
+  - [[#quick-setup-with-use-package][Quick setup with use-package]]
+- [[#about-icomplete][About Icomplete]]
+- [[#configuration-for-icomplete-vertical][Configuration for icomplete-vertical]]
+  - [[#maximum-minibuffer-height][Maximum minibuffer height]]
+  - [[#fixed-or-variable-height-minibuffer][Fixed or variable height minibuffer]]
+  - [[#the-candidate-separator][The candidate separator]]
+  - [[#defining-your-own-vertical-commands][Defining your own vertical commands]]
+:END:
+
+* Overview
 
 This package defines a global minor mode to display Icomplete
 completion candidates vertically.  You could get a vertical display
@@ -45,7 +64,7 @@ paging in the minibuffer isn't very useful. (Running
 =icomplete-vertical-mode=, except that it doesn't print a message in the
 echo area disturbing your candidate display until the next keypress.)
 
-** Configuration with use-package 
+** Quick setup with use-package 
 
 If you manage your configuration with =use-package=, you can use this
 form to install and configure =icomplete-vertical=:
