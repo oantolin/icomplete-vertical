@@ -32,10 +32,11 @@ first candidate (=icomplete-tidy=) is on the line where you type.
 
 * Installation and usage
 
-For now, put =icomplete-vertical.el= somewhere in your =load-path=, and
-=require= it. Turn the minor mode on or off with =M-x
-icomplete-vertical-mode=. It only does something when =icomplete-mode= is
-also active.
+If you use MELPA, the easiest way to install =icomplete-vertical= is via
+=package-install=. Alternatively, download =icomplete-vertical.el=, put it
+somewhere in your =load-path=, and =require= it. Turn the minor mode on or
+off with =M-x icomplete-vertical-mode=. It only does something when
+=icomplete-mode= is also active.
 
 You might also want to bind =icomplete-vertical-toggle= to some key in
 the =icomplete-minibuffer-map= keymap. I use =C-v=, for "vertical", since
@@ -43,6 +44,49 @@ paging in the minibuffer isn't very useful. (Running
 =icomplete-vertical-toggle= has the same toggling effect as running
 =icomplete-vertical-mode=, except that it doesn't print a message in the
 echo area disturbing your candidate display until the next keypress.)
+
+** Configuration with use-package 
+
+If you manage your configuration with =use-package=, you can use this
+form to install and configure =icomplete-vertical=:
+
+#+begin_src emacs-lisp
+  (use-package icomplete-vertical
+    :ensure t
+    :demand t
+    :custom
+    (completion-styles '(partial-completion substring))
+    (completion-category-overrides '((file (styles basic substring))))
+    (read-file-name-completion-ignore-case t)
+    (read-buffer-completion-ignore-case t)
+    (completion-ignore-case t)
+    :config
+    (icomplete-mode)
+    (icomplete-vertical-mode)
+    :bind (:map icomplete-minibuffer-map
+                ("<down>" . icomplete-forward-completions)
+                ("C-n" . icomplete-forward-completions)
+                ("<up>" . icomplete-backward-completions)
+                ("C-p" . icomplete-backward-completions)
+                ("C-v" . icomplete-vertical-toggle)))
+#+end_src
+
+A completion framework is probably something you don't want to defer
+loading, that's what the  =:demand t= is there for.
+
+The settings shown in the =:custom= part of the form are the ones I use,
+but I'll stop short of recommending them, and instead just recommend
+that you lookup those variables in the documentation and think about
+what value you want for them.
+
+The default keybindings for =icomplete-forward-completions= and
+=icomplete-backward-completions= are =C-.= and =C-,= which are difficult to
+use with some terminal emulators (they cause no problem at all for
+graphical Emacs).
+
+(The above block mixes configuration for =icomplete-vertical=, =icomplete=
+and the built-in completion framework. A =use-package= purist might want
+to separate that into different =use-package= forms.)
 
 * About Icomplete
 
