@@ -80,7 +80,7 @@ that you lookup those variables in the documentation and think about
 what value you want for them.
 
 The default keybindings for =icomplete-forward-completions= and
-=icomplete-backward-completions= are =C-.= and =C-,= which are difficult to
+=icomplete-backward-completions= are C-. and C-, which are difficult to
 use with some terminal emulators (they cause no problem at all for
 graphical Emacs).
 
