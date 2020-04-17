@@ -180,6 +180,8 @@ To be used as filter return advice for `icomplete-completions'."
 Meant to be added to `icomplete-minibuffer-setup-hook'."
   (visual-line-mode -1) ; just in case
   (setq truncate-lines t)
+  (when (boundp 'auto-hscroll-mode)
+    (setq-local auto-hscroll-mode 'current-line))
   (enlarge-window (- icomplete-prospects-height (1- (window-height)))))
 
 (defun icomplete-vertical--setup-separator ()
