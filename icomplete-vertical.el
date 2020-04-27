@@ -170,9 +170,10 @@ To be used as filter return advice for `icomplete-completions'."
              completions)))
       (when (eq t (cdr (assq 'resize-mini-windows
                              icomplete-vertical-saved-state)))
-        (enlarge-window (- (min icomplete-prospects-height
-                                (cl-count ?\n reformatted))
-                           (1- (window-height)))))
+        (unless (one-window-p)
+          (enlarge-window (- (min icomplete-prospects-height
+                                  (cl-count ?\n reformatted))
+                             (1- (window-height))))))
       reformatted)))
 
 (defun icomplete-vertical-minibuffer-setup ()
@@ -182,7 +183,8 @@ Meant to be added to `icomplete-minibuffer-setup-hook'."
   (setq truncate-lines t)
   (when (boundp 'auto-hscroll-mode)
     (setq-local auto-hscroll-mode 'current-line))
-  (enlarge-window (- icomplete-prospects-height (1- (window-height)))))
+  (unless (one-window-p)
+    (enlarge-window (- icomplete-prospects-height (1- (window-height))))))
 
 (defun icomplete-vertical--setup-separator ()
   "Put the Icomplete Vertical separator in canonical form.
@@ -208,7 +210,8 @@ separator face if the separator is a faceless string."
 This is used when toggling Icomplete Vertical mode while the
 minibuffer is in use."
   (setq truncate-lines nil)
-  (enlarge-window (- (1- (window-height)))))
+  (unless (one-window-p)
+    (enlarge-window (- (1- (window-height))))))
 
 ;;;###autoload
 (define-minor-mode icomplete-vertical-mode
