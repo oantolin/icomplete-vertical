@@ -221,11 +221,13 @@ minibuffer is in use."
       (progn
         (icomplete-vertical-save-values
          icomplete-vertical-saved-state
+         (icomplete-mode t)
          (icomplete-separator icomplete-vertical-separator)
          (icomplete-hide-common-prefix nil)
          (icomplete-show-matches-on-no-input t)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
+        (icomplete-mode)
         (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
@@ -236,6 +238,7 @@ minibuffer is in use."
           (icomplete-vertical-minibuffer-setup)))
     (cl-loop for (variable . value) in icomplete-vertical-saved-state
              do (set variable value))
+    (unless icomplete-mode (icomplete-mode -1))
     (advice-remove 'icomplete-completions
                    #'icomplete-vertical-format-completions)
     (remove-hook 'icomplete-minibuffer-setup-hook
