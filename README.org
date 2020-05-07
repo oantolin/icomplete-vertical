@@ -213,6 +213,6 @@ following specification makes a red dotted line:
    :height 20)
 #+end_src
 
-This packages contains the =icomplete-vertical-do= macro for you to
+This package contains the =icomplete-vertical-do= macro for you to
 implement your own commands. It does not define any commands that use
 the macro.
