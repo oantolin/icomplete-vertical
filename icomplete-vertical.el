@@ -4,7 +4,7 @@
 
 ;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
 ;; Keywords: convenience, completion
-;; Version: 0.1
+;; Version: 0.2
 ;; Homepage: https://github.com/oantolin/icomplete-vertical
 ;; Package-Requires: ((emacs "24.4"))
 
