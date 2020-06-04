@@ -227,7 +227,7 @@ minibuffer is in use."
          (icomplete-show-matches-on-no-input t)
          (resize-mini-windows 'grow-only)
          (icomplete-prospects-height icomplete-vertical-prospects-height))
-        (icomplete-mode)
+        (unless icomplete-mode (icomplete-mode)) ; Don't disable `fido-mode'.
         (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
