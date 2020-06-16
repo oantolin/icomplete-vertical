@@ -175,7 +175,7 @@ To be used as filter return advice for `icomplete-completions'."
                        (or (match-string 1 completions) "")
                        (let ((candidates (match-string 2 completions)))
                          (if icomplete-vertical-candidates-below-end
-                             (let* ((pad (make-string (1- (point)) ? ))
+                             (let* ((pad (make-string (current-column) ? ))
                                     (sep (concat "\n" pad)))
                                (concat pad
                                 (replace-regexp-in-string "\n" sep candidates)))
