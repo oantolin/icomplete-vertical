@@ -141,6 +141,13 @@ This face is only applied if the separator string does not
 already have face properties."
   :group 'icomplete-vertical)
 
+(defcustom icomplete-vertical-candidates-below-end nil
+  "Should candidates appear directly below the end of the input?
+If this variable is non-nil the candidates instead of appearing
+flush-left, will appear below the end of the minibuffer input."
+  :type 'boolean
+  :group 'icomplete-vertical)
+
 (defvar icomplete-vertical-saved-state nil
   "Alist of certain variables and their last known value.
 Records the values when Icomplete Vertical mode is turned on.
@@ -166,7 +173,13 @@ To be used as filter return advice for `icomplete-completions'."
                              completions)
                (format "%s \n%s"
                        (or (match-string 1 completions) "")
-                       (match-string 2 completions))
+                       (let ((candidates (match-string 2 completions)))
+                         (if icomplete-vertical-candidates-below-end
+                             (let* ((pad (make-string (1- (point)) ? ))
+                                    (sep (concat "\n" pad)))
+                               (concat pad
+                                (replace-regexp-in-string "\n" sep candidates)))
+                           candidates)))
              completions)))
       (when (eq t (cdr (assq 'resize-mini-windows
                              icomplete-vertical-saved-state)))
