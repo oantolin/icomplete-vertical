@@ -189,6 +189,29 @@ To be used as filter return advice for `icomplete-completions'."
                              (1- (window-height))))))
       reformatted)))
 
+(defun icomplete-vertical-annotate (completions)
+  "Add annotations to COMPLETIONS.
+To be used as filter return advice for `icomplete--sorted-completions'."
+  (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
+         (annotate (completion-metadata-get metadata 'annotation-function)))
+    (if (not (and annotate (consp completions)))
+        completions
+      (let* ((last (last completions))
+             (save (cdr last)))
+        (setcdr last nil)
+        (let ((annotated
+               (mapcar
+                (lambda (candidate)
+                  (let ((annotation (funcall annotate candidate)))
+                    (font-lock-prepend-text-property
+                     0 (length annotation)
+                     'face 'completions-annotations
+                     annotation)
+                    (concat candidate annotation)))
+                completions)))
+          (setcdr (last annotated) save)
+          annotated)))))
+
 (defun icomplete-vertical-minibuffer-setup ()
   "Setup minibuffer for a vertical icomplete session.
 Meant to be added to `icomplete-minibuffer-setup-hook'."
@@ -244,6 +267,8 @@ minibuffer is in use."
         (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical-format-completions)
+        (advice-add #'icomplete--sorted-completions
+                    :filter-return #'icomplete-vertical-annotate)
         (add-hook 'icomplete-minibuffer-setup-hook
                   #'icomplete-vertical-minibuffer-setup
                   5)
@@ -254,6 +279,8 @@ minibuffer is in use."
     (unless icomplete-mode (icomplete-mode -1))
     (advice-remove 'icomplete-completions
                    #'icomplete-vertical-format-completions)
+    (advice-remove 'icomplete--sorted-completions
+                   #'icomplete-vertical-annotate)
     (remove-hook 'icomplete-minibuffer-setup-hook
                  #'icomplete-vertical-minibuffer-setup)
     (when (window-minibuffer-p)
