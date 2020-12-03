@@ -202,11 +202,15 @@ To be used as filter return advice for `icomplete--sorted-completions'."
         (let ((annotated
                (mapcar
                 (lambda (candidate)
-                  (let ((annotation (funcall annotate candidate)))
-                    (font-lock-append-text-property
-                     0 (length annotation)
-                     'face 'completions-annotations
-                     annotation)
+                  (let ((annotation (or (funcall annotate candidate) "")))
+                    (unless (text-property-not-all
+                             0 (length annotation)
+                             'face nil
+                             annotation)
+                      (font-lock-append-text-property
+                       0 (length annotation)
+                       'face 'completions-annotations
+                       annotation))
                     (concat candidate annotation)))
                 completions)))
           (setcdr (last annotated) save)
