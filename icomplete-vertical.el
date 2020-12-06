@@ -213,7 +213,8 @@ To be used as filter return advice for `icomplete--sorted-completions'."
                        annotation))
                     (concat candidate annotation)))
                 completions)))
-          (setcdr (last annotated) save)
+          (setcdr last save)             ; restore
+          (setcdr (last annotated) save) ; imitate
           annotated)))))
 
 (defun icomplete-vertical-minibuffer-setup ()
