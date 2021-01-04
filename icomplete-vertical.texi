@@ -1,0 +1,264 @@
+\input texinfo    @c -*- texinfo -*-
+@c %**start of header
+@setfilename icomplete-vertical.info
+@settitle 
+@documentencoding UTF-8
+@documentlanguage en
+@c %**end of header
+
+@dircategory Emacs
+@direntry
+* Icomplete-vertical: (icomplete-vertical). Display Icomplete completion candidates vertically.
+@end direntry
+
+@finalout
+@titlepage
+@title 
+@author Omar Antolín Camarena
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top 
+@end ifnottex
+
+@menu
+* Overview::
+* Installation and usage::
+* About Icomplete::
+* Configuration for icomplete-vertical::
+
+@detailmenu
+--- The Detailed Node Listing ---
+
+Installation and usage
+
+* Quick setup with use-package::
+
+Configuration for icomplete-vertical
+
+* Maximum minibuffer height::
+* Fixed or variable height minibuffer::
+* The candidate separator::
+* Defining your own vertical commands::
+
+@end detailmenu
+@end menu
+
+@node Overview
+@chapter Overview
+
+This package defines a global minor mode to display Icomplete
+completion candidates vertically.  You could get a vertical display
+without this package, by using @samp{(setq icomplete-separator "\n")}, but
+that has two problems which @samp{icomplete-vertical-mode} solves:
+
+@enumerate
+@item
+Usually the minibuffer prompt and the text you type scroll off
+to the left!  This conceals the minibuffer prompt, and worse,
+the text you enter.
+
+@item
+The first candidate appears on the same line as the one you are
+typing in. This makes it harder to visually scan the candidates
+as the first one starts in a different column from the others.
+@end enumerate
+
+The @uref{https://github.com/oantolin/icomplete-vertical#screenshots, screenshots} explain this better than words can.
+
+@node Installation and usage
+@chapter Installation and usage
+
+If you use MELPA, the easiest way to install @samp{icomplete-vertical} is via
+@samp{package-install}. Alternatively, download @samp{icomplete-vertical.el}, put it
+somewhere in your @samp{load-path}, and @samp{require} it. Turn the minor mode on or
+off with @samp{M-x icomplete-vertical-mode}. It only does something when
+@samp{icomplete-mode} is also active.
+
+You might also want to bind @samp{icomplete-vertical-toggle} to some key in
+the @samp{icomplete-minibuffer-map} keymap. I use @samp{C-v}, for ``vertical'', since
+paging in the minibuffer isn't very useful. (Running
+@samp{icomplete-vertical-toggle} has the same toggling effect as running
+@samp{icomplete-vertical-mode}, except that it doesn't print a message in the
+echo area disturbing your candidate display until the next keypress.)
+
+@menu
+* Quick setup with use-package::
+@end menu
+
+@node Quick setup with use-package
+@section Quick setup with use-package
+
+If you manage your configuration with @samp{use-package}, you can use this
+form to install and configure @samp{icomplete-vertical}:
+
+@lisp
+(use-package icomplete-vertical
+  :ensure t
+  :demand t
+  :custom
+  (completion-styles '(partial-completion substring))
+  (completion-category-overrides '((file (styles basic substring))))
+  (read-file-name-completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (completion-ignore-case t)
+  :config
+  (icomplete-mode)
+  (icomplete-vertical-mode)
+  :bind (:map icomplete-minibuffer-map
+              ("<down>" . icomplete-forward-completions)
+              ("C-n" . icomplete-forward-completions)
+              ("<up>" . icomplete-backward-completions)
+              ("C-p" . icomplete-backward-completions)
+              ("C-v" . icomplete-vertical-toggle)))
+@end lisp
+
+A completion framework is probably something you don't want to defer
+loading, that's what the  @samp{:demand t} is there for.
+
+The settings shown in the @samp{:custom} part of the form are the ones I use,
+but I'll stop short of recommending them, and instead just recommend
+that you lookup those variables in the documentation and think about
+what value you want for them.
+
+The default keybindings for @samp{icomplete-forward-completions} and
+@samp{icomplete-backward-completions} are C-. and C-, which are difficult to
+use with some terminal emulators (they cause no problem at all for
+graphical Emacs).
+
+(The above block mixes configuration for @samp{icomplete-vertical}, @samp{icomplete}
+and the built-in completion framework. A @samp{use-package} purist might want
+to separate that into different @samp{use-package} forms.)
+
+@node About Icomplete
+@chapter About Icomplete
+
+This package is meant to be used in conjunction with Icomplete, which
+is a built-in Emacs completion UI (similar to Ido) that provides a
+display of the completion candidates and interactive narrowing.
+Icomplete has several configuration options but even just sticking
+@samp{(icomplete-mode)} in your init file is enough to make it useful. The
+documentation that comes with Emacs is a little sparse (see @samp{(info
+"(Emacs)Icomplete")}), so for a demo and longer introduction see
+Protesilaos Stavrou's @uref{https://youtu.be/vtwYIKUZwEM, icomplete video}.
+
+Icomplete is a UI for the built-in completion system in Emacs which is
+very customizable and has various styles of matching candidates
+(notably including @samp{flex} completion starting from Emacs 27). See the
+Completion section of the manual, particularly the subsections @samp{(info
+"(Emacs)Completion Styles")} and @samp{(info "(Emacs)Completion Options")}.
+
+@node Configuration for icomplete-vertical
+@chapter Configuration for icomplete-vertical
+
+@menu
+* Maximum minibuffer height::
+* Fixed or variable height minibuffer::
+* The candidate separator::
+* Defining your own vertical commands::
+@end menu
+
+@node Maximum minibuffer height
+@section Maximum minibuffer height
+
+The maximum number of lines you want to use to display candidates
+during completion is determined by the variable
+@samp{icomplete-vertical-prospects-height}, which you can customize. This was
+made a separate variable from @samp{icomplete-prospects-height} because if
+you use icomplete both horizontally and vertically you are likely to
+want different values for the two settings.
+
+@node Fixed or variable height minibuffer
+@section Fixed or variable height minibuffer
+
+You can control whether the minibuffer has a fixed height or grows and
+shrinks as the number of candidates changes while using
+@samp{icomplete-vertical-mode} completion. This is controlled by the
+value  of the standard Emacs variable @samp{resize-mini-windows} at the time
+@samp{icomplete-vertical-mode} is activated.
+
+If @samp{resize-mini-windows} is set to @samp{t}, then the minibuffer will grow and
+shrink depending on the number of candidates ---up to a maximum of
+@samp{icomplete-vertical-prospects-height} lines of candidates.
+
+On the other hand, if @samp{resize-mini-windows} is set to any other value
+(either @samp{nil} or @samp{grow-only}) then @samp{icomplete-vertical-mode} will keep the
+height fixed at @samp{icomplete-vertical-prospects-height} lines of
+candidates.
+
+@node The candidate separator
+@section The candidate separator
+
+The value of variable @samp{icomplete-vertical-separator} is used to separate
+the candidates in vertical completion; it defaults to a single newline
+and should always contain at least one newline. You can customize this
+variable and the custom UI will offer some predefined choices: a
+newline, a dashed line, a dotted line, a solid line.
+
+The variable can be set to a string with text properties, such as
+faces. If the string has any faces applied, they will be
+respected. If, on the other hand, it has no faces at all, then the
+@samp{icomplete-vertical-separator} face will be applied to it. That face by
+default simply inherits from the @samp{shadow} face used for deemphasized
+text.
+
+You can define named vertical completion separators by customizing
+@samp{icomplete-vertical-separator-alist}. The symbols used as keys in this
+alist are valid values for @samp{icomplete-vertical-separator} and for
+@samp{:separator} options in @samp{icomplete-vertical-do} (see below).
+
+@node Defining your own vertical commands
+@section Defining your own vertical commands
+
+If you choose to use Icomplete horizontally by default but want to
+define a few commands that leverage @samp{icomplete-vertical-mode}, use the
+@samp{icomplete-vertical-do} macro.  Use this for lists with naturally long
+candidates, such as filesystem paths or kill-ring entries.
+
+For example, let's implement a command to yank from the kill-ring
+using completion. Often the kills are multiline, so for improved
+usability we'll need (1) the completion to start in vertical mode, (2)
+the number of lines used to display entries to be relatively large,
+and (3) the separator to be, say, a dotted line:
+
+@lisp
+(defun insert-kill-ring-item ()
+  "Insert item from kill-ring, selected with completion."
+  (interactive)
+  (icomplete-vertical-do (:separator 'dotted-line :height 20)
+    (insert (completing-read "Yank: " kill-ring nil t))))
+@end lisp
+
+Note that the completion merely @emph{starts out} in vertical mode: nothing
+keeps you from toggling between vertical and horizontal while
+@samp{insert-kill-ring-item} is active. Once the command finishes running,
+your previous completion configuration will be restored.
+
+Both the @samp{:separator} and @samp{:height} are optional and default to
+@samp{icomplete-vertical-separator} and to
+@samp{icomplete-vertical-prospects-height}, respectively. If you omit both
+parts you still need to include the empty parenthesis:
+@samp{(icomplete-vertical-do () ...)}!.
+
+Everything described above for the variable
+@samp{icomplete-vertical-separator}, applies equally to the separator passed
+to @samp{icomplete-vertical-do}: if it is a symbol it is looked up in
+@samp{icomplete-vertical-separator-alist}; if it is a string it should
+contain at least one newline, it can have text properties, such as
+faces, which control the display, and if it has no faces it will have
+@samp{icomplete-vertical-separator} face applied to it. For example, the
+following specification makes a red dotted line:
+
+@lisp
+(:separator (propertize "\n··········\n" 'face '(:foreground "red"))
+ :height 20)
+@end lisp
+
+This package contains the @samp{icomplete-vertical-do} macro for you to
+implement your own commands. It does not define any commands that use
+the macro.
+
+@bye

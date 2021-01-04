@@ -1,3 +1,8 @@
+#+EXPORT_FILE_NAME: icomplete-vertical.texi
+#+TEXINFO_DIR_CATEGORY: Emacs
+#+TEXINFO_DIR_TITLE: Icomplete-vertical: (icomplete-vertical).
+#+TEXINFO_DIR_DESC: Display Icomplete completion candidates vertically
+
 * Overview
 :PROPERTIES:
 :TOC: :include all :ignore this
