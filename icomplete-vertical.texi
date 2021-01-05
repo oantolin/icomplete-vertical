@@ -1,7 +1,7 @@
 \input texinfo    @c -*- texinfo -*-
 @c %**start of header
 @setfilename icomplete-vertical.info
-@settitle 
+@settitle icomplete-vertical
 @documentencoding UTF-8
 @documentlanguage en
 @c %**end of header
@@ -13,7 +13,7 @@
 
 @finalout
 @titlepage
-@title 
+@title icomplete-vertical
 @author Omar Antolín Camarena
 @end titlepage
 
@@ -21,7 +21,7 @@
 
 @ifnottex
 @node Top
-@top 
+@top icomplete-vertical
 @end ifnottex
 
 @menu
@@ -67,7 +67,7 @@ typing in. This makes it harder to visually scan the candidates
 as the first one starts in a different column from the others.
 @end enumerate
 
-The @uref{https://github.com/oantolin/icomplete-vertical#screenshots, screenshots} explain this better than words can.
+The screenshots explain this better than words can.
 
 @node Installation and usage
 @chapter Installation and usage

@@ -1,3 +1,5 @@
+#+TITLE: icomplete-vertical
+#+OPTIONS: d:nil
 #+EXPORT_FILE_NAME: icomplete-vertical.texi
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Icomplete-vertical: (icomplete-vertical).
@@ -35,7 +37,7 @@ The screenshots explain this better than words can.
   - [[#defining-your-own-vertical-commands][Defining your own vertical commands]]
 :END:
 
-* Screenshots
+* Screenshots :noexport:
 
 This is what =describe-function= looks like in =icomplete-vertical-mode=
 (with Protesilaos Stavrou's [[https://gitlab.com/protesilaos/modus-themes][lovely modus-operandi theme]]):
