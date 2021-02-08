@@ -131,6 +131,7 @@ the list, focus its text field, and enter its value with
           (string :tag "Custom string")
           (sexp :tag "Custom propertized string"))
   :group 'icomplete-vertical
+  :initialize 'custom-initialize-default
   :set (lambda (_ separator)
          (icomplete-vertical-set-separator separator)))
 
