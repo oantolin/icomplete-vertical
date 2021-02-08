@@ -165,6 +165,24 @@ VALUEFORM."
                             collect `(cons ',var ,var)))
     ,@(apply #'append bindings)))
 
+;; This next function is taken from Selectrum, written by @clemera,
+;; who used it to solve the same bleeding prompt problem that this
+;; package suffered from.
+(defun icomplete-vertical--display-string (str)
+  "Return the string which STR displays as.
+This replaces portions of STR that have display properties with
+the string they will display as."
+  (let ((len (length str)) (pos 0) chunks)
+    (while (not (eq pos len))
+      (let ((end (next-single-property-change pos 'display str len)))
+        (push (if-let* ((display (get-text-property pos 'display str))
+                        (stringp (stringp display)))
+                  display
+                (substring str pos end))
+              chunks)
+        (setq pos end)))
+    (apply #'concat (nreverse chunks))))
+
 (defun icomplete-vertical-format-completions (completions)
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
@@ -188,7 +206,7 @@ To be used as filter return advice for `icomplete-completions'."
           (enlarge-window (- (min icomplete-prospects-height
                                   (cl-count ?\n reformatted))
                              (1- (window-height))))))
-      reformatted)))
+      (icomplete-vertical--display-string reformatted))))
 
 (defun icomplete-vertical-annotate (completions)
   "Add annotations to COMPLETIONS.
