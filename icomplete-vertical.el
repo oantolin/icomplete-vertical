@@ -175,10 +175,8 @@ the string they will display as."
   (let ((len (length str)) (pos 0) chunks)
     (while (not (eq pos len))
       (let ((end (next-single-property-change pos 'display str len)))
-        (push (if-let* ((display (get-text-property pos 'display str))
-                        (stringp (stringp display)))
-                  display
-                (substring str pos end))
+        (push (let ((display (get-text-property pos 'display str)))
+                (if (stringp display) display (substring str pos end)))
               chunks)
         (setq pos end)))
     (apply #'concat (nreverse chunks))))
