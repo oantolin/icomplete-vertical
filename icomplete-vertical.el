@@ -174,9 +174,9 @@ This replaces portions of STR that have display properties with
 the string they will display as."
   (let ((len (length str)) (pos 0) chunks)
     (while (not (eq pos len))
-      (let ((end (next-single-property-change pos 'display str len)))
-        (push (let ((display (get-text-property pos 'display str)))
-                (if (stringp display) display (substring str pos end)))
+      (let ((end (next-single-property-change pos 'display str len))
+            (display (get-text-property pos 'display str)))
+        (push (if (stringp display) display (substring str pos end))
               chunks)
         (setq pos end)))
     (apply #'concat (nreverse chunks))))
