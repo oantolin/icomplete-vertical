@@ -149,12 +149,12 @@ flush-left, will appear below the end of the minibuffer input."
   :type 'boolean
   :group 'icomplete-vertical)
 
-(defvar icomplete-vertical-saved-state nil
+(defvar icomplete-vertical--saved-state nil
   "Alist of certain variables and their last known value.
 Records the values when Icomplete Vertical mode is turned on.
 The values are restored when Icomplete Vertical mode is turned off.")
 
-(defmacro icomplete-vertical-save-values (saved &rest bindings)
+(defmacro icomplete-vertical--save-values (saved &rest bindings)
   "Save state of variables prior to Icomplete Vertical mode activation.
 Bind variables according to BINDINGS and set SAVED to an alist of
 their previous values.  Each element of BINDINGS is a
@@ -181,7 +181,7 @@ the string they will display as."
         (setq pos end)))
     (apply #'concat (nreverse chunks))))
 
-(defun icomplete-vertical-format-completions (completions)
+(defun icomplete-vertical--format-completions (completions)
   "Reformat COMPLETIONS for better aesthetics.
 To be used as filter return advice for `icomplete-completions'."
   (save-match-data
@@ -199,14 +199,14 @@ To be used as filter return advice for `icomplete-completions'."
                            candidates)))
              completions)))
       (when (eq t (cdr (assq 'resize-mini-windows
-                             icomplete-vertical-saved-state)))
+                             icomplete-vertical--saved-state)))
         (unless (one-window-p)
           (enlarge-window (- (min icomplete-prospects-height
                                   (cl-count ?\n reformatted))
                              (1- (window-height))))))
       (icomplete-vertical--display-string reformatted))))
 
-(defun icomplete-vertical-annotate (completions)
+(defun icomplete-vertical--annotate (completions)
   "Add annotations to COMPLETIONS.
 To be used as filter return advice for `icomplete--sorted-completions'."
   (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
@@ -234,7 +234,7 @@ To be used as filter return advice for `icomplete--sorted-completions'."
           (setcdr (last annotated) save) ; imitate
           annotated)))))
 
-(defun icomplete-vertical-minibuffer-setup ()
+(defun icomplete-vertical--minibuffer-setup ()
   "Setup minibuffer for a vertical icomplete session.
 Meant to be added to `icomplete-minibuffer-setup-hook'."
   (visual-line-mode -1) ; just in case
@@ -263,7 +263,7 @@ separator face if the separator is a faceless string."
                             nil
                             icomplete-separator)))
 
-(defun icomplete-vertical-minibuffer-teardown ()
+(defun icomplete-vertical--minibuffer-teardown ()
   "Undo minibuffer setup for a vertical icomplete session.
 This is used when toggling Icomplete Vertical mode while the
 minibuffer is in use."
@@ -277,8 +277,8 @@ minibuffer is in use."
   :global t
   (if icomplete-vertical-mode
       (progn
-        (icomplete-vertical-save-values
-         icomplete-vertical-saved-state
+        (icomplete-vertical--save-values
+         icomplete-vertical--saved-state
          (icomplete-mode t)
          (icomplete-separator icomplete-vertical-separator)
          (icomplete-hide-common-prefix nil)
@@ -288,25 +288,25 @@ minibuffer is in use."
         (unless icomplete-mode (icomplete-mode)) ; Don't disable `fido-mode'.
         (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
-                    :filter-return #'icomplete-vertical-format-completions)
+                    :filter-return #'icomplete-vertical--format-completions)
         (advice-add #'icomplete--sorted-completions
-                    :filter-return #'icomplete-vertical-annotate)
+                    :filter-return #'icomplete-vertical--annotate)
         (add-hook 'icomplete-minibuffer-setup-hook
-                  #'icomplete-vertical-minibuffer-setup
+                  #'icomplete-vertical--minibuffer-setup
                   5)
         (when (window-minibuffer-p)
-          (icomplete-vertical-minibuffer-setup)))
-    (cl-loop for (variable . value) in icomplete-vertical-saved-state
+          (icomplete-vertical--minibuffer-setup)))
+    (cl-loop for (variable . value) in icomplete-vertical--saved-state
              do (set variable value))
     (unless icomplete-mode (icomplete-mode -1))
     (advice-remove 'icomplete-completions
-                   #'icomplete-vertical-format-completions)
+                   #'icomplete-vertical--format-completions)
     (advice-remove 'icomplete--sorted-completions
-                   #'icomplete-vertical-annotate)
+                   #'icomplete-vertical--annotate)
     (remove-hook 'icomplete-minibuffer-setup-hook
-                 #'icomplete-vertical-minibuffer-setup)
+                 #'icomplete-vertical--minibuffer-setup)
     (when (window-minibuffer-p)
-      (icomplete-vertical-minibuffer-teardown))))
+      (icomplete-vertical--minibuffer-teardown))))
 
 ;;;###autoload
 (defun icomplete-vertical-toggle ()
