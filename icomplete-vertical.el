@@ -75,7 +75,14 @@
     (icomplete-vertical--setup-separator)))
 
 (defcustom icomplete-vertical-separator-alist
-  '((newline     . "\n")
+  `((newline     . "\n")
+    (thin-line .
+               ,(concat
+                 (propertize "\n" 'face '(:height 1))
+                 (propertize " "
+                             'face '(:inherit icomplete-vertical-separator :underline t :height 1)
+                             'display '(space :align-to right))
+                 (propertize "\n" 'face '(:height 1))))
     (solid-line  . "\n——————————\n")
     (dashed-line . "\n----------\n")
     (dotted-line . "\n··········\n"))
