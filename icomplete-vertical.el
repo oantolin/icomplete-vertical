@@ -62,6 +62,23 @@
   "Display icomplete candidates vertically."
   :group 'icomplete)
 
+(defface icomplete-vertical-group-title
+  '((t :inherit shadow :slant italic))
+  "Face used for the title text of the candidate group headlines."
+  :group 'icomplete-vertical)
+
+(defface icomplete-vertical-group-separator
+  '((t :inherit shadow :strike-through t))
+  "Face used for the separator lines of the candidate groups."
+  :group 'icomplete-vertical)
+
+(defface icomplete-vertical-separator
+  '((t :inherit shadow))
+  "Face for icomplete-vertical separator.
+This face is only applied if the separator string does not
+already have face properties."
+  :group 'icomplete-vertical)
+
 (defcustom icomplete-vertical-prospects-height 10
   "Minibuffer height when using icomplete vertically."
   :type 'integer
@@ -142,12 +159,13 @@ the list, focus its text field, and enter its value with
   :set (lambda (_ separator)
          (icomplete-vertical-set-separator separator)))
 
-(defface icomplete-vertical-separator
-  '((default (:inherit shadow)))
-  "Face for icomplete-vertical separator.
-This face is only applied if the separator string does not
-already have face properties."
-  :group 'icomplete-vertical)
+(defcustom icomplete-vertical-group-format
+  (concat
+   #("    " 0 4 (face icomplete-vertical-group-separator))
+   #(" %s " 0 4 (face icomplete-vertical-group-title))
+   #(" " 0 1 (face icomplete-vertical-group-separator display (space :align-to right))))
+  "Format string used for the group title."
+  :type '(choice (const nil) string))
 
 (defcustom icomplete-vertical-candidates-below-end nil
   "Should candidates appear directly below the end of the input?
@@ -217,29 +235,57 @@ To be used as filter return advice for `icomplete-completions'."
   "Add annotations to COMPLETIONS.
 To be used as filter return advice for `icomplete--sorted-completions'."
   (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
-         (annotate (completion-metadata-get metadata 'annotation-function)))
-    (if (not (and annotate (consp completions)))
+         (annotate (completion-metadata-get metadata 'annotation-function))
+         (group (completion-metadata-get metadata 'x-group-function)))
+    (if (not (and (or annotate group) (consp completions)))
         completions
-      (let* ((last (last completions))
+      (cl-loop
+       with last-title
+       for idx from 1 to icomplete-vertical-prospects-height
+       for candidate in completions
+       do
+       (when annotate
+         (when-let (annotation (funcall annotate candidate))
+           (unless (text-property-not-all
+                    0 (length annotation)
+                    'face nil
+                    annotation)
+             (font-lock-append-text-property
+              0 (length annotation)
+              'face 'completions-annotations
+              annotation))
+           (setq candidate (concat candidate annotation))))
+       (when (and icomplete-vertical-group-format group)
+         (let ((title (caar (funcall group (list candidate)))))
+           (unless (equal title last-title)
+             (setq candidate (concat
+                              (propertize
+                               " " 'display
+                               (concat (format icomplete-vertical-group-format title) "\n"))
+                              candidate)
+                   last-title title))))
+       collect candidate into annotated
+       finally (setcdr (last annotated) (cdr (last completions)))
+       finally return annotated))))
+
+(defun icomplete-vertical--all-sorted-completions (orig &optional start end)
+  "Group sorted COMPLETIONS by `x-group-function'.
+ORIG is the original function, which takes START and END arguments."
+  (unless completion-all-sorted-completions
+    (funcall orig start end)
+    (when-let (group (and completion-all-sorted-completions
+                          (completion-metadata-get (completion-metadata
+                                                    (minibuffer-contents)
+                                                    minibuffer-completion-table
+                                                    minibuffer-completion-predicate)
+                                                   'x-group-function)))
+      (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
-        (let ((annotated
-               (mapcar
-                (lambda (candidate)
-                  (let ((annotation (or (funcall annotate candidate) "")))
-                    (unless (text-property-not-all
-                             0 (length annotation)
-                             'face nil
-                             annotation)
-                      (font-lock-append-text-property
-                       0 (length annotation)
-                       'face 'completions-annotations
-                       annotation))
-                    (concat candidate annotation)))
-                (seq-take completions icomplete-vertical-prospects-height))))
-          (setcdr last save)             ; restore
-          (setcdr (last annotated) save) ; imitate
-          annotated)))))
+        (setq completion-all-sorted-completions
+              (mapcan #'cdr (funcall group completion-all-sorted-completions)))
+        (setcdr (last completion-all-sorted-completions) save))))
+  completion-all-sorted-completions)
 
 (defun icomplete-vertical--minibuffer-setup ()
   "Setup minibuffer for a vertical icomplete session.
@@ -296,6 +342,8 @@ minibuffer is in use."
         (icomplete-vertical--setup-separator)
         (advice-add 'icomplete-completions
                     :filter-return #'icomplete-vertical--format-completions)
+        (advice-add #'completion-all-sorted-completions
+                    :around #'icomplete-vertical--all-sorted-completions)
         (advice-add #'icomplete--sorted-completions
                     :filter-return #'icomplete-vertical--annotate)
         (add-hook 'icomplete-minibuffer-setup-hook
@@ -310,6 +358,8 @@ minibuffer is in use."
                    #'icomplete-vertical--format-completions)
     (advice-remove 'icomplete--sorted-completions
                    #'icomplete-vertical--annotate)
+    (advice-remove #'completion-all-sorted-completions
+                   #'icomplete-vertical--all-sorted-completions)
     (remove-hook 'icomplete-minibuffer-setup-hook
                  #'icomplete-vertical--minibuffer-setup)
     (when (window-minibuffer-p)
