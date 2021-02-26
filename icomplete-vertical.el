@@ -6,7 +6,7 @@
 ;; Keywords: convenience, completion
 ;; Version: 0.3
 ;; Homepage: https://github.com/oantolin/icomplete-vertical
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "26.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
