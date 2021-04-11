@@ -274,8 +274,9 @@ ORIG is the original function, which takes START and END arguments."
   (unless completion-all-sorted-completions
     (funcall orig start end)
     (when-let (group (and completion-all-sorted-completions
-                          (completion-metadata-get (completion--field-metadata start)
-                                                   'x-group-function)))
+                          (completion-metadata-get
+                           (completion--field-metadata (or start (minibuffer-prompt-end)))
+                           'x-group-function)))
       (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
