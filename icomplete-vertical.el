@@ -258,11 +258,12 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        (when (and icomplete-vertical-group-format group)
          (let ((title (caar (funcall group (list candidate)))))
            (unless (equal title last-title)
-             (setq candidate (concat
-                              (propertize
-                               " " 'display
-                               (concat (format icomplete-vertical-group-format title) "\n"))
-                              candidate)
+             (setq candidate (propertize
+                              candidate
+                              'line-prefix
+                              (concat
+                               (format icomplete-vertical-group-format title)
+                               "\n"))
                    last-title title))))
        collect candidate into annotated
        finally (setcdr (last annotated) (cdr (last completions)))
