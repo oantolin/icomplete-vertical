@@ -211,18 +211,22 @@ the string they will display as."
 To be used as filter return advice for `icomplete-completions'."
   (save-match-data
     (let ((reformatted
-           (if (string-match "^\\((.*)\\|\\[.*\\]\\)?{\\(\\(?:.\\|\n\\)*\\)}"
-                             completions)
-               (format "%s \n%s"
-                       (or (match-string 1 completions) "")
-                       (let ((candidates (match-string 2 completions)))
-                         (if icomplete-vertical-candidates-below-end
-                             (let* ((pad (make-string (current-column) ? ))
-                                    (sep (concat "\n" pad)))
-                               (concat pad
-                                (replace-regexp-in-string "\n" sep candidates)))
-                           candidates)))
-             completions)))
+           (cond
+            ((string-match "^\\((.*)\\|\\[.*\\]\\)?{\\(\\(?:.\\|\n\\)*\\)}$"
+                           completions)
+             (format "%s \n%s"
+                     (or (match-string 1 completions) "")
+                     (let ((candidates (match-string 2 completions)))
+                       (if icomplete-vertical-candidates-below-end
+                           (let* ((pad (make-string (current-column) ? ))
+                                  (sep (concat "\n" pad)))
+                             (concat pad
+                                     (replace-regexp-in-string "\n" sep
+                                                               candidates)))
+                         candidates))))
+            ((string-match "^\\[\n\\(.*\\)\\]$" completions)
+             (format "[%s]" (match-string 1 completions)))
+            (t completions))))
       (when (eq t (cdr (assq 'resize-mini-windows
                              icomplete-vertical--saved-state)))
         (unless (one-window-p)
@@ -243,16 +247,16 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        with last-title
        for idx from 1 to icomplete-vertical-prospects-height
        for candidate in completions
+       for formatted-title = nil
        do
        (when (and icomplete-vertical-group-format group)
          (let ((title (caar (funcall group (list candidate)))))
            (unless (equal title last-title)
-             (setq candidate (propertize
-                              candidate
-                              'line-prefix
-                              (concat
-                               (format icomplete-vertical-group-format title)
-                               "\n"))
+             (setq formatted-title
+                   (propertize
+                     "\n"
+                     'line-prefix
+                     (format icomplete-vertical-group-format title))
                    last-title title))))
        (when annotate
          (when-let (annotation (funcall annotate candidate))
@@ -265,6 +269,8 @@ To be used as filter return advice for `icomplete--sorted-completions'."
               'face 'completions-annotations
               annotation))
            (setq candidate (concat candidate annotation))))
+       (when formatted-title
+         (setq candidate (concat formatted-title candidate)))
        collect candidate into annotated
        finally (setcdr (last annotated) (cdr (last completions)))
        finally return annotated))))
