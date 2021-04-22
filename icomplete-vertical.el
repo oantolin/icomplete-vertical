@@ -248,16 +248,18 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        for idx from 1 to icomplete-vertical-prospects-height
        for candidate in completions
        for formatted-title = nil
+       for transformed-candidate = candidate
        do
        (when (and icomplete-vertical-group-format group)
-         (let ((title (caar (funcall group (list candidate)))))
-           (unless (equal title last-title)
-             (setq formatted-title
+         (let ((group-result (funcall group candidate)))
+           (setq transformed-candidate (car group-result))
+           (unless (equal (cdr group-result) last-title)
+             (setq last-title (cdr group-result)
+                   formatted-title
                    (propertize
                      "\n"
                      'line-prefix
-                     (format icomplete-vertical-group-format title))
-                   last-title title))))
+                     (format icomplete-vertical-group-format last-title))))))
        (when annotate
          (when-let (annotation (funcall annotate candidate))
            (unless (text-property-not-all
@@ -268,10 +270,10 @@ To be used as filter return advice for `icomplete--sorted-completions'."
               0 (length annotation)
               'face 'completions-annotations
               annotation))
-           (setq candidate (concat candidate annotation))))
+           (setq transformed-candidate (concat transformed-candidate annotation))))
        (when formatted-title
-         (setq candidate (concat formatted-title candidate)))
-       collect candidate into annotated
+         (setq transformed-candidate (concat formatted-title transformed-candidate)))
+       collect transformed-candidate into annotated
        finally (setcdr (last annotated) (cdr (last completions)))
        finally return annotated))))
 
