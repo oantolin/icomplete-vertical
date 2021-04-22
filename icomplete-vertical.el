@@ -240,24 +240,26 @@ To be used as filter return advice for `icomplete-completions'."
 To be used as filter return advice for `icomplete--sorted-completions'."
   (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
          (annotate (completion-metadata-get metadata 'annotation-function))
-         (group (completion-metadata-get metadata 'x-group-function)))
-    (if (not (and (or annotate group) (consp completions)))
+         (title-fun (completion-metadata-get metadata 'x-title-function)))
+    (if (not (and (or annotate title-fun) (consp completions)))
         completions
       (cl-loop
        with last-title
        for idx from 1 to icomplete-vertical-prospects-height
        for candidate in completions
        for formatted-title = nil
+       for transformed-candidate = candidate
        do
-       (when (and icomplete-vertical-group-format group)
-         (let ((title (caar (funcall group (list candidate)))))
-           (unless (equal title last-title)
-             (setq formatted-title
+       (when (and icomplete-vertical-group-format title-fun)
+         (let ((new-title (funcall title-fun candidate nil)))
+           (unless (equal new-title last-title)
+             (setq last-title new-title
+                   formatted-title
                    (propertize
                      "\n"
                      'line-prefix
-                     (format icomplete-vertical-group-format title))
-                   last-title title))))
+                     (format icomplete-vertical-group-format new-title))))
+           (setq transformed-candidate (funcall title-fun candidate 'transform))))
        (when annotate
          (when-let (annotation (funcall annotate candidate))
            (unless (text-property-not-all
@@ -268,27 +270,38 @@ To be used as filter return advice for `icomplete--sorted-completions'."
               0 (length annotation)
               'face 'completions-annotations
               annotation))
-           (setq candidate (concat candidate annotation))))
+           (setq transformed-candidate (concat transformed-candidate annotation))))
        (when formatted-title
-         (setq candidate (concat formatted-title candidate)))
-       collect candidate into annotated
+         (setq transformed-candidate (concat formatted-title transformed-candidate)))
+       collect transformed-candidate into annotated
        finally (setcdr (last annotated) (cdr (last completions)))
        finally return annotated))))
 
+(defun icomplete-vertical--group-by (fun elems)
+  "Group ELEMS by FUN."
+  (let ((groups))
+    (dolist (cand elems)
+      (let* ((key (funcall fun cand nil))
+             (group (assoc key groups)))
+        (if group
+            (setcdr group (cons cand (cdr group)))
+          (push (list key cand) groups))))
+    (mapcan (lambda (x) (nreverse (cdr x))) (nreverse groups))))
+
 (defun icomplete-vertical--all-sorted-completions (orig &optional start end)
-  "Group sorted COMPLETIONS by `x-group-function'.
+  "Group sorted COMPLETIONS by `x-title-function'.
 ORIG is the original function, which takes START and END arguments."
   (unless completion-all-sorted-completions
     (funcall orig start end)
-    (when-let (group (and completion-all-sorted-completions
-                          (completion-metadata-get
-                           (completion--field-metadata (or start (minibuffer-prompt-end)))
-                           'x-group-function)))
+    (when-let (title-fun (and completion-all-sorted-completions
+                              (completion-metadata-get
+                               (completion--field-metadata (or start (minibuffer-prompt-end)))
+                               'x-title-function)))
       (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
         (setq completion-all-sorted-completions
-              (mapcan #'cdr (funcall group completion-all-sorted-completions)))
+              (icomplete-vertical--group-by title-fun completion-all-sorted-completions))
         (setcdr (last completion-all-sorted-completions) save))))
   completion-all-sorted-completions)
 
