@@ -250,16 +250,16 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        for formatted-title = nil
        for transformed-candidate = candidate
        do
-       (when (and icomplete-vertical-group-format title-fun)
-         (let ((new-title (funcall title-fun candidate nil)))
-           (unless (equal new-title last-title)
-             (setq last-title new-title
-                   formatted-title
-                   (propertize
-                     "\n"
-                     'line-prefix
-                     (format icomplete-vertical-group-format new-title))))
-           (setq transformed-candidate (funcall title-fun candidate 'transform))))
+       (when-let (new-title (and (and icomplete-vertical-group-format
+                                      title-fun (funcall title-fun candidate nil))))
+         (unless (equal new-title last-title)
+           (setq last-title new-title
+                 formatted-title
+                 (propertize
+                  "\n"
+                  'line-prefix
+                  (format icomplete-vertical-group-format new-title))))
+         (setq transformed-candidate (funcall title-fun candidate 'transform)))
        (when annotate
          (when-let (annotation (funcall annotate candidate))
            (unless (text-property-not-all
