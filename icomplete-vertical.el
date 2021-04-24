@@ -226,8 +226,9 @@ To be used as filter return advice for `icomplete-completions'."
                                      (replace-regexp-in-string "\n" sep
                                                                candidates)))
                          candidates))))
-            ((string-match "^\\[\n\\(.*\\)\\]$" completions)
-             (format "[%s]" (match-string 1 completions)))
+            ((string-match "^\\([([]\\)\n" completions)
+             (concat (match-string 1 completions)
+                     (substring completions 2)))
             (t completions))))
       (when (eq t (cdr (assq 'resize-mini-windows
                              icomplete-vertical--saved-state)))
