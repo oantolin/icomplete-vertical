@@ -241,9 +241,9 @@ To be used as filter return advice for `icomplete-completions'."
   "Add annotations to COMPLETIONS.
 To be used as filter return advice for `icomplete--sorted-completions'."
   (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
-         (annotate (completion-metadata-get metadata 'annotation-function))
-         (title-fun (completion-metadata-get metadata 'x-title-function)))
-    (if (not (and (or annotate title-fun) (consp completions)))
+         (annotator (completion-metadata-get metadata 'annotation-function))
+         (titler (completion-metadata-get metadata 'x-title-function)))
+    (if (not (and (or annotator titler) (consp completions)))
         completions
       (cl-loop
        with last-title
@@ -253,8 +253,8 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        for transformed-candidate = candidate
        do
        (when-let (new-title (and icomplete-vertical-group-format
-                                 title-fun
-                                 (funcall title-fun candidate nil)))
+                                 titler
+                                 (funcall titler candidate nil)))
          (unless (equal new-title last-title)
            (setq last-title new-title
                  formatted-title
@@ -262,9 +262,9 @@ To be used as filter return advice for `icomplete--sorted-completions'."
                   "\n"
                   'line-prefix
                   (format icomplete-vertical-group-format new-title))))
-         (setq transformed-candidate (funcall title-fun candidate 'transform)))
-       (when annotate
-         (when-let (annotation (funcall annotate candidate))
+         (setq transformed-candidate (funcall titler candidate 'transform)))
+       (when annotator
+         (when-let (annotation (funcall annotator candidate))
            (unless (text-property-not-all
                     0 (length annotation)
                     'face nil
@@ -284,7 +284,7 @@ To be used as filter return advice for `icomplete--sorted-completions'."
 
 (defun icomplete-vertical--group-by (fun elems)
   "Group ELEMS by FUN."
-  (let ((groups))
+  (let (groups)
     (dolist (cand elems)
       (let* ((key (funcall fun cand nil))
              (group (assoc key groups)))
@@ -298,17 +298,17 @@ To be used as filter return advice for `icomplete--sorted-completions'."
 ORIG is the original function, which takes START and END arguments."
   (unless completion-all-sorted-completions
     (funcall orig start end)
-    (when-let (title-fun (and completion-all-sorted-completions
-                              (completion-metadata-get
-                               (completion--field-metadata
-                                (or start (minibuffer-prompt-end)))
-                               'x-title-function)))
+    (when-let (titler (and completion-all-sorted-completions
+                           (completion-metadata-get
+                            (completion--field-metadata
+                             (or start (minibuffer-prompt-end)))
+                            'x-title-function)))
       (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
         (setq completion-all-sorted-completions
               (icomplete-vertical--group-by
-               title-fun completion-all-sorted-completions))
+               titler completion-all-sorted-completions))
         (setcdr (last completion-all-sorted-completions) save))))
   completion-all-sorted-completions)
 
