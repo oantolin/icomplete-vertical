@@ -97,7 +97,8 @@ already have face properties."
                ,(concat
                  (propertize "\n" 'face '(:height 1))
                  (propertize " "
-                             'face '(:inherit icomplete-vertical-separator :underline t :height 1)
+                             'face '(:inherit icomplete-vertical-separator
+                                     :underline t :height 1)
                              'display '(space :align-to right))
                  (propertize "\n" 'face '(:height 1))))
     (solid-line  . "\n——————————\n")
@@ -163,7 +164,8 @@ the list, focus its text field, and enter its value with
   (concat
    #("    " 0 4 (face icomplete-vertical-group-separator))
    #(" %s " 0 4 (face icomplete-vertical-group-title))
-   #(" " 0 1 (face icomplete-vertical-group-separator display (space :align-to right))))
+   #(" " 0 1 (face icomplete-vertical-group-separator
+              display (space :align-to right))))
   "Format string used for the group title."
   :type '(choice (const nil) string))
 
@@ -250,8 +252,9 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        for formatted-title = nil
        for transformed-candidate = candidate
        do
-       (when-let (new-title (and (and icomplete-vertical-group-format
-                                      title-fun (funcall title-fun candidate nil))))
+       (when-let (new-title (and icomplete-vertical-group-format
+                                 title-fun
+                                 (funcall title-fun candidate nil)))
          (unless (equal new-title last-title)
            (setq last-title new-title
                  formatted-title
@@ -270,9 +273,11 @@ To be used as filter return advice for `icomplete--sorted-completions'."
               0 (length annotation)
               'face 'completions-annotations
               annotation))
-           (setq transformed-candidate (concat transformed-candidate annotation))))
+           (setq transformed-candidate
+                 (concat transformed-candidate annotation))))
        (when formatted-title
-         (setq transformed-candidate (concat formatted-title transformed-candidate)))
+         (setq transformed-candidate
+               (concat formatted-title transformed-candidate)))
        collect transformed-candidate into annotated
        finally (setcdr (last annotated) (cdr (last completions)))
        finally return annotated))))
@@ -295,13 +300,15 @@ ORIG is the original function, which takes START and END arguments."
     (funcall orig start end)
     (when-let (title-fun (and completion-all-sorted-completions
                               (completion-metadata-get
-                               (completion--field-metadata (or start (minibuffer-prompt-end)))
+                               (completion--field-metadata
+                                (or start (minibuffer-prompt-end)))
                                'x-title-function)))
       (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
         (setq completion-all-sorted-completions
-              (icomplete-vertical--group-by title-fun completion-all-sorted-completions))
+              (icomplete-vertical--group-by
+               title-fun completion-all-sorted-completions))
         (setcdr (last completion-all-sorted-completions) save))))
   completion-all-sorted-completions)
 
