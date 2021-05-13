@@ -243,8 +243,8 @@ To be used as filter return advice for `icomplete-completions'."
 To be used as filter return advice for `icomplete--sorted-completions'."
   (let* ((metadata (completion--field-metadata (icomplete--field-beg)))
          (annotator (completion-metadata-get metadata 'annotation-function))
-         (titler (completion-metadata-get metadata 'x-title-function)))
-    (if (not (and (or annotator titler) (consp completions)))
+         (grouper (completion-metadata-get metadata 'group-function)))
+    (if (not (and (or annotator grouper) (consp completions)))
         completions
       (cl-loop
        with last-title
@@ -254,8 +254,8 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        for transformed-candidate = candidate
        do
        (when-let (new-title (and icomplete-vertical-group-format
-                                 titler
-                                 (funcall titler candidate nil)))
+                                 grouper
+                                 (funcall grouper candidate nil)))
          (unless (equal new-title last-title)
            (setq last-title new-title
                  formatted-title
@@ -263,7 +263,7 @@ To be used as filter return advice for `icomplete--sorted-completions'."
                   "\n"
                   'line-prefix
                   (format icomplete-vertical-group-format new-title))))
-         (setq transformed-candidate (funcall titler candidate 'transform)))
+         (setq transformed-candidate (funcall grouper candidate 'transform)))
        (when annotator
          (when-let (annotation (funcall annotator candidate))
            (unless (text-property-not-all
@@ -295,21 +295,21 @@ To be used as filter return advice for `icomplete--sorted-completions'."
     (mapcan (lambda (x) (nreverse (cdr x))) (nreverse groups))))
 
 (defun icomplete-vertical--all-sorted-completions (orig &optional start end)
-  "Group sorted COMPLETIONS by `x-title-function'.
+  "Group sorted COMPLETIONS by `group-function'.
 ORIG is the original function, which takes START and END arguments."
   (unless completion-all-sorted-completions
     (funcall orig start end)
-    (when-let (titler (and completion-all-sorted-completions
-                           (completion-metadata-get
-                            (completion--field-metadata
-                             (or start (minibuffer-prompt-end)))
-                            'x-title-function)))
+    (when-let (grouper (and completion-all-sorted-completions
+                            (completion-metadata-get
+                             (completion--field-metadata
+                              (or start (minibuffer-prompt-end)))
+                             'group-function)))
       (let* ((last (last completion-all-sorted-completions))
              (save (cdr last)))
         (setcdr last nil)
         (setq completion-all-sorted-completions
               (icomplete-vertical--group-by
-               titler completion-all-sorted-completions))
+               grouper completion-all-sorted-completions))
         (setcdr (last completion-all-sorted-completions) save))))
   completion-all-sorted-completions)
 
