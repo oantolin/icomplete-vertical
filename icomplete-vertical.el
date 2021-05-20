@@ -305,17 +305,6 @@ To be used as filter return advice for `icomplete--sorted-completions'."
           (setcdr (cdar group-list) (caadr group-list)) ;; Link groups
           (setq group-list (cdr group-list)))))))
 
-(defun icomplete-vertical--group-by (fun elems)
-  "Group ELEMS by FUN."
-  (let (groups)
-    (dolist (cand elems)
-      (let* ((key (funcall fun cand nil))
-             (group (assoc key groups)))
-        (if group
-            (push cand (cdr group))
-          (push (list key cand) groups))))
-    (mapcan (lambda (x) (nreverse (cdr x))) (nreverse groups))))
-
 (defun icomplete-vertical--all-sorted-completions (orig &optional start end)
   "Group sorted COMPLETIONS by `group-function'.
 ORIG is the original function, which takes START and END arguments."
