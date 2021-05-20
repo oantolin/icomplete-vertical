@@ -283,6 +283,28 @@ To be used as filter return advice for `icomplete--sorted-completions'."
        finally (setcdr (last annotated) (cdr (last completions)))
        finally return annotated))))
 
+
+;; The following function is taken from minad's Vertico package
+(defun icomplete-vertical--group-by (fun elems)
+  "Group ELEMS by FUN."
+  (when elems
+    (let ((group-list) (group-hash (make-hash-table :test #'equal)))
+      (while elems
+        (let* ((key (funcall fun (car elems) nil))
+               (group (gethash key group-hash)))
+          (if group
+              (setcdr group (setcdr (cdr group) elems)) ;; Append to tail of group
+            (setq group (cons elems elems)) ;; (head . tail)
+            (push group group-list)
+            (puthash key group group-hash))
+          (setq elems (cdr elems))))
+      (setcdr (cdar group-list) nil) ;; Unlink last tail
+      (setq group-list (nreverse group-list))
+      (prog1 (caar group-list)
+        (while (cdr group-list)
+          (setcdr (cdar group-list) (caadr group-list)) ;; Link groups
+          (setq group-list (cdr group-list)))))))
+
 (defun icomplete-vertical--group-by (fun elems)
   "Group ELEMS by FUN."
   (let (groups)
@@ -290,7 +312,7 @@ To be used as filter return advice for `icomplete--sorted-completions'."
       (let* ((key (funcall fun cand nil))
              (group (assoc key groups)))
         (if group
-            (setcdr group (cons cand (cdr group)))
+            (push cand (cdr group))
           (push (list key cand) groups))))
     (mapcan (lambda (x) (nreverse (cdr x))) (nreverse groups))))
 
