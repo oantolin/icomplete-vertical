@@ -270,9 +270,10 @@ To be used as filter return advice for `icomplete--sorted-completions'."
                     0 (length annotation)
                     'face nil
                     annotation)
-             (font-lock-append-text-property
+             (add-face-text-property
               0 (length annotation)
-              'face 'completions-annotations
+              'completions-annotations
+              t
               annotation))
            (setq transformed-candidate
                  (concat transformed-candidate annotation))))
