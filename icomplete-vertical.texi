@@ -6,7 +6,7 @@
 @documentlanguage en
 @c %**end of header
 
-@dircategory Emacs
+@dircategory Emacs misc features
 @direntry
 * Icomplete-vertical: (icomplete-vertical). Display Icomplete completion candidates vertically.
 @end direntry
